@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Homepage | {{block.super}} {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+<div class="section section-padding courses">
+    <div class="container">
+        <div class="group-title-index"><h2 class="center-title">Your Boards</h2><h4 class="top-title">Start by <b>creating new board</b> &amp; add members.</h4><!--.bottom-title<i class="bottom-icon icon-a-1-01"></i>--></div>
+        <div class="courses-wrapper">
+            <!-- Nav tabs-->
+            <div class="row top-content">
+                <div class="col-md-3">
+                    <ul role="tablist" class="nav nav-tabs edugate-tabs">
+                        <li role="presentation" class="active"><a href="#campus" data-toggle="tab" class="text">Created By You</a></li>
+                        <li role="presentation"><a href="#education" data-toggle="tab" class="text">Joined By You</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6"></div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-login btn-green"><span>Create Board</span></button>
+                </div>
+            </div>
+            <!-- Tab panes-->
+            <div class="tab-content courses-content">
+                <div id="campus" role="tabpanel" class="tab-pane fade in active">
+                    <div class="style-show style-grid row">
+                        <div class="col-style">
+                            <div class="edugate-layout-3">
+                                <div class="edugate-layout-3-wrapper">
+                                    <div class="edugate-content" style="display: grid; place-items: center;">
+                                        <br><br>
+                                        <div class="edugate-image">
+                                            <img src="{% static 'assets/images/courses/courses-4.jpg' %}" style="height: 200px; width: 300px;" alt="Board Image" class="img-responsive"/>
+                                        </div><br>
+                                        <a href="#" class="title">Photoghaphy Master</a>
+                                        <div class="info">
+                                            <div class="view item"><i class="fa fa-user"></i>
+                                             &nbsp; 56</div>
+                                            Created On: 
+                                            <div class="date-time item">17 sep 2015</div>
+                                        </div>
+                                        <br>
+                                        <div class="description text-justify">
+                                            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                                        </div>
+                                        <button class="btn btn-green "><span>learn now</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-style">
+                            <div class="edugate-layout-3">
+                                <div class="edugate-layout-3-wrapper">
+                                    <div class="edugate-content" style="display: grid; place-items: center;">
+                                        <br><br>
+                                        <div class="edugate-image"><img src="{% static 'assets/images/categories/categories-1.jpg' %}" style="height: 200px; width: 300px;" alt="Board Image" class="img-responsive"/></div><br>
+                                        <a href="#" class="title">Photoghaphy Master</a>
+                                        <div class="info">
+                                            <div class="view item"><i class="fa fa-user"></i>
+                                             &nbsp; 56</div>
+                                            Created On: 
+                                            <div class="date-time item">17 sep 2015</div>
+                                        </div>
+                                        <br>
+                                        <div class="description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                                        </div>
+                                        <button class="btn btn-green"><span>learn now</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="education" role="tabpanel" class="tab-pane fade">
+                    <div class="style-show style-grid row">
+                        <div class="col-style">
+                            <div class="edugate-layout-3">
+                                <div class="edugate-layout-3-wrapper">
+                                    <div class="edugate-content" style="display: grid; place-items: center;">
+                                        <br><br>
+                                        <div class="edugate-image"><img src="{% static 'assets/images/categories/categories-1.jpg' %}" style="height: 200px; width: 300px;" alt="Board Image" class="img-responsive"/></div><br>
+                                        <a href="#" class="title">Photoghaphy Master</a>
+                                        <div class="info">
+                                            <div class="view item"><i class="fa fa-user"></i>
+                                             &nbsp; 56</div>
+                                            Created On: 
+                                            <div class="date-time item">17 sep 2015</div>
+                                        </div>
+                                        <br>
+                                        <div class="description">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                                        </div>
+                                        <button class="btn btn-green"><span>learn now</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-style">
+                            <div class="edugate-layout-3">
+                                <div class="edugate-layout-3-wrapper">
+                                    <div class="edugate-content" style="display: grid; place-items: center;">
+                                        <br><br>
+                                        <div class="edugate-image">
+                                            <img src="{% static 'assets/images/courses/courses-4.jpg' %}" style="height: 200px; width: 300px;" alt="Board Image" class="img-responsive"/>
+                                        </div><br>
+                                        <a href="#" class="title">Photoghaphy Master</a>
+                                        <div class="info">
+                                            <div class="view item"><i class="fa fa-user"></i>
+                                             &nbsp; 56</div>
+                                            Created On: 
+                                            <div class="date-time item">17 sep 2015</div>
+                                        </div>
+                                        <br>
+                                        <div class="description text-justify">
+                                            It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                                        </div>
+                                        <button class="btn btn-green "><span>learn now</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<nav class="pagination col-md-12">
+                            <ul class="pagination__list">
+                                <li><a rel="prev" href="#" class="pagination__previous btn-squae disable">&#8249;</a></li>
+                                <li><span class="pagination__page btn-squae active">1</span></li>
+                                <li><a href="#" class="pagination__page btn-squae">2</a></li>
+                                <li><a href="#" class="pagination__page btn-squae">...</a></li>
+                                <li><a href="#" class="pagination__page btn-squae">14</a></li>
+                                <li><a rel="next" href="#" class="pagination__next btn-squae">&#8250;</a></li>
+                            </ul>
+                        </nav>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

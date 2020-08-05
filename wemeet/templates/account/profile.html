@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Profile | {{block.super}} {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+<style>
+    ul#id_gender li
+    {
+        display: inline-block;
+        margin-top: 10px;
+    }
+    li label {
+        padding-left: 20px;
+    }
+</style>
+<div class="section background-opacity page-title set-height-top">
+    <div class="container">
+        <div class="page-title-wrapper"><!--.page-title-content--><h2 class="captions">profile</h2>
+        </div>
+    </div>
+</div>
+<div class="section section-padding profile-teacher">
+    <div class="container">
+        <div class="profile-teacher-wrapper">
+            <form method="post" novalidate>
+                <div class="teacher-info">
+                    <div class="staff-item2 customize">
+                        {% csrf_token %}
+                        <div class="staff-item-wrapper row">
+                            <div class="staff-info col-md-12">
+                                <span class="staff-avatar">
+                                    <img src="{% static 'assets/images/people-avatar-4.jpg' %}" alt="Profile Picture" class="img-responsive"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="display: grid; place-items: center;">
+                                {{form.profilePic.errors}}
+                                {{form.profilePic}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="teacher-des">
+                        <div class="content">
+                            <div class="content-detail">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4" style="margin-top: 15px;">
+                                        <label for="{{form.email.id_for_label}}" class="control-label form-label">{{form.email.label}}<span class="highlight">*</span></label>
+                                        {{form.email.errors}}
+                                        {{form.email}}
+                                    </div>
+                                    <div class="col-md-4" style="margin-top: 15px;">
+                                        <label for="{{form.alternateEmail.id_for_label}}" class="control-label form-label">{{form.alternateEmail.label}}</label>
+                                        {{form.alternateEmail.errors}}
+                                        {{form.alternateEmail}}
+                                    </div>
+                                    <div class="col-md-4" style="margin-top: 15px;">
+                                        <label for="{{form.mobile.id_for_label}}" class="control-label form-label">{{form.mobile.label}}</label>
+                                        {{form.mobile.errors}}
+                                        {{form.mobile}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4" style="margin-top: 15px;">
+                                        <label for="{{form.firstName.id_for_label}}" class="control-label form-label">{{form.firstName.label}}<span class="highlight">*</span></label>
+                                        {{form.firstName.errors}}
+                                        {{form.firstName}}
+                                    </div>
+                                    <div class="col-md-4" style="margin-top: 15px;">
+                                        <label for="{{form.lastName.id_for_label}}" class="control-label form-label">{{form.lastName.label}}<span class="highlight">*</span></label>
+                                        {{form.lastName.errors}}
+                                        {{form.lastName}}
+                                    </div>
+                                    <div class="col-md-4" style="margin-top: 15px;">
+                                        <label for="{{form.dob.id_for_label}}" class="control-label form-label">{{form.dob.label}}</label>
+                                        {{form.dob.errors}}
+                                        {{form.dob}}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" style="margin-top: 15px;">
+                                        <label for="{{form.gender.id_for_label}}" class="control-label form-label">{{form.gender.label}}</label>
+                                        {{form.gender.errors}}
+                                        {{form.gender}}
+                                    </div>
+                                </div>
+                                <br>
+                                <button type="submit" class="btn btn-login btn-green"><span>Update</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    let dateField = document.getElementById('id_dob');
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    let maxDate = yyyy + '-' + mm + '-' + dd;
+    dateField.setAttribute('max', maxDate);
+    console.log(maxDate)
+</script>
+{% endblock content %}
+{% block go_to_top %}{% endblock go_to_top %}
+{% block footer %}{% endblock footer %}
