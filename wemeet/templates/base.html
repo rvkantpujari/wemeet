@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <title>
+        {% block title %}WeMeet{% endblock %}
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'assets/images/logo.png' %}" type="image/x-icon">
+    <!-- LIBRARY FONT-->
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,400italic,700,900,300">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/font/font-icon/font-awesome-4.4.0/css/font-awesome.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/font/font-icon/font-svg/css/Glyphter.css' %}">
+    <!-- LIBRARY CSS-->
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/animate/animate.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/bootstrap-3.3.5/css/bootstrap.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/owl-carousel-2.0/assets/owl.carousel.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/selectbox/css/jquery.selectbox.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/fancybox/css/jquery.fancybox.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/fancybox/css/jquery.fancybox-buttons.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/media-element/build/mediaelementplayer.min.css' %}">
+    <!-- STYLE CSS    -->
+    <link type="text/css", rel='stylesheet', href="{% static 'assets/css/color-1.css' %}" id="color-skins">
+    <script src="{% static 'assets/libs/jquery/jquery-2.1.4.min.js' %}"></script>
+    <script src="{% static 'assets/libs/js-cookie/js.cookie.js' %}"></script>
+</head>
+<body>
+<!-- HEADER-->
+<header>
+    {% block navbar %}
+        {% include '__navbar.html' %}
+    {% endblock navbar %}
+</header>
+<!-- WRAPPER-->
+<div id="wrapper-content">
+    <!-- PAGE WRAPPER-->
+    <div id="page-wrapper">
+        <!-- MAIN CONTENT-->
+        <div class="main-content">
+            <!-- CONTENT-->
+            <div class="content">
+                {% block content %}{% endblock content %}
+            </div>
+        </div>
+    </div>
+    {% block go_to_top %}
+        <!-- BUTTON BACK TO TOP-->
+        <div id="back-top">
+            <a href="#top"><i class="fa fa-angle-double-up"></i></a>
+        </div>
+    {% endblock go_to_top %}
+</div>
+{% block footer %}
+    <!-- FOOTER-->
+    {% include '__footer.html' %}
+{% endblock footer %}
+<!-- LOADING-->
+<div class="body-2 loading">
+    <div class="dots-loader"></div>
+</div>
+<!-- JAVASCRIPT LIBS-->
+<script src="{% static 'assets/libs/bootstrap-3.3.5/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'assets/libs/smooth-scroll/jquery-smoothscroll.js' %}"></script>
+<script src="{% static 'assets/libs/owl-carousel-2.0/owl.carousel.min.js' %}"></script>
+<script src="{% static 'assets/libs/appear/jquery.appear.js' %}"></script>
+<script src="{% static 'assets/libs/count-to/jquery.countTo.js' %}"></script>
+<script src="{% static 'assets/libs/wow-js/wow.min.js' %}"></script>
+<script src="{% static 'assets/libs/selectbox/js/jquery.selectbox-0.2.min.js' %}"></script>
+<script src="{% static 'assets/libs/fancybox/js/jquery.fancybox.js' %}"></script>
+<script src="{% static 'assets/libs/fancybox/js/jquery.fancybox-buttons.js' %}"></script>
+<!-- MAIN JS-->
+<script src="{% static 'assets/js/main.js' %}"></script>
+<!-- LOADING SCRIPTS FOR PAGE-->
+<script src="{% static 'assets/libs/isotope/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'assets/libs/isotope/fit-columns.js' %}"></script>
+<script src="{% static 'assets/js/pages/homepage.js' %}"></script>
+</body>
+</html>

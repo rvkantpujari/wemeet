@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% url 'login' as nav_login %}
+
+{% block title %}Register with {{block.super}}{% endblock %}
+{% block topbar %}{% endblock topbar %}
+{% block navbar %}{% endblock navbar %}
+
+{% block content %}
+<!-- WRAPPER-->
+<div class="content">
+    <div class="page-register rlp">
+        <div class="container">
+            <div class="register-wrapper rlp-wrapper">
+                <div class="register-table rlp-table">
+                    <img src="{% static 'assets/images/logo.png' %}" style="height: 120px; width: 120px; margin-bottom: -20px;" alt="Logo" class="register"/>
+                    <div class="register-title rlp-title">Register</div>
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        <div class="register-form bg-w-form rlp-form">
+                            <table>
+                                <div class="row">
+                                    {% for field in form.visible_fields %}
+                                    <div class="col-md-12">
+                                        <label for="{{field.id_for_label}}" class="control-label form-label">{{field.label}} <span class="highlight">*</span></label>
+                                        {{field.errors}}
+                                        {{field}}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </table>
+                            <a href="../login/">Already have an account?</a>
+                        </div>
+                        <div class="register-submit">
+                            <button type="submit" class="btn btn-register btn-green"><span>Register</span></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block go_to_top %}{% endblock go_to_top %}
+{% block footer %}{% endblock footer %}
