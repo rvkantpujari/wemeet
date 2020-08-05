@@ -1,0 +1,32 @@
+{% load static %}
+{% url 'login' as nav_login %}
+{% url 'register' as nav_register %}
+{% url 'homepage' as nav_home %}
+{% url 'profile' as nav_profile %}
+{% url 'resetPass' as nav_reset_password %}
+<div class="header-main homepage-01">
+    <div class="container">
+        <div class="header-main-wrapper">
+            <div class="navbar-header">
+                <div class="logo pull-left">
+                    <a href="{{nav_home}}" class="header-logo">
+                        <img src="{% static 'assets/images/logo.png' %}" style="height: 80px; width: 80px;" alt=""/>
+                    </a>
+                </div>
+                <button type="button" data-toggle="collapse" data-target=".navigation" class="navbar-toggle edugate-navbar"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+            </div>
+            <nav class="navigation collapse navbar-collapse pull-right">
+                <ul class="nav-links nav navbar-nav">
+                    <li><a href="{{nav_home}}" class="main-menu">Home</a></li>
+                    <li class="dropdown"><a href="javascript:void(0)" class="main-menu">Account<span class="fa fa-angle-down icons-dropdown"></span></a>
+                        <ul class="dropdown-menu edugate-dropdown-menu-1">
+                            <li><a href="{{nav_profile}}" class="link-page">Profile</a></li>
+                            <li><a href="{{nav_reset_password}}" class="link-page">Reset Password</a></li>
+                            <li><a href="{{nav_login}}" class="link-page">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
