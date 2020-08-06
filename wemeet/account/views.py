@@ -93,7 +93,8 @@ class Register(View):
         user.set_password(request.POST['password'])
         user.save()
 
-        userDetails = UserDetails(email=user, profilePic='default.png')
+        profilePic = '/media/profilePics/default.png'
+        userDetails = UserDetails(email=user, profilePic=profilePic)
         userDetails.save()
 
         print(user.email)
@@ -121,7 +122,7 @@ class Profile(View):
         first_name = request.POST['firstName']
         last_name = request.POST['lastName']
         dob = request.POST['dob']
-        gender = request.POST['gender']
+        gender = None
         mobile = request.POST['mobile']
         alternateEmail = request.POST['alternateEmail']
 
@@ -129,8 +130,8 @@ class Profile(View):
             mobile = None
         if not alternateEmail:
             alternateEmail = None
-        if not gender:
-            gender = None
+        if request.POST.get('gender'):
+            gender = request.POST['gender']
         if not dob:
             dob = None
 
@@ -157,15 +158,21 @@ class Profile(View):
             if os.path.exists(settings.STATIC_DIR+ '/' + profilePicPath):
                 os.remove(os.path.join(settings.STATIC_DIR, profilePicPath))
 
-            file = fs.save(profilePicName, request_file)
-            fileurl = fs.url(file)
+            file = fs.save(profilePicName, request_file)            
+
             image = Image.open(storeAt + profilePicName)
-            image.resize((820, 800))
+            
+            image = image.resize((820, 800), Image.ANTIALIAS)
+            image.save(storeAt + profilePicName, format='PNG')
 
-            print('saved pic: ',(image))
+            UserDetails.objects.filter(pk = curr_user.id).update(
+                profilePic = profilePicPath
+            )
+
+            print('saved pic: ',(image.size))
 
 
-        return redirect('home')
+        return redirect('profile')
 
 
 

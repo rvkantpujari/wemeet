@@ -45,14 +45,14 @@
                             <div class="content-detail">
                                 <div class="row">
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.email.id_for_label}}" class="control-label form-label">Email<span class="highlight">*</span></label>
+                                        <label class="control-label form-label">Email<span class="highlight">*</span></label>
                                         <input type="text" name="email" class="form-control form-input col-md-3"
-                                        value="{{ user.email.email}}" placeholder="johndoe@gmail.com" required id="id_email">
+                                        value="{{ user.email.email}}" placeholder="johndoe@gmail.com" required id="id_email" disabled>
                                     </div>
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.alternateEmail.id_for_label}}" class="control-label form-label">alternate Email</label>
-                                        {% if user.alerternatEmail %}
-                                        <input type="text" name="alternateEmail" class="form-control form-input" placeholder="johndoe@gmail.com"
+                                        <label class="control-label form-label">alternate Email</label>
+                                        {% if user.alternateEmail %}
+                                        <input type="text" name="alternateEmail" class="form-control form-input"
                                         value="{{ user.alternateEmail }}" 
                                         id="id_alternateEmail">
                                         {% else %}
@@ -62,7 +62,7 @@
 
                                     </div>
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.mobile.id_for_label}}" class="control-label form-label">Mobile: </label>
+                                        <label class="control-label form-label">Mobile: </label>
                                         {% if user.mobile %}
                                         <input type="text" name="mobile" class="form-control form-input" value="{{ user.mobile }}" placeholder="9012345678" id="id_mobile">
                                         {% else %}
@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.firstName.id_for_label}}" class="control-label form-label">First Name<span class="highlight">*</span></label>
+                                        <label class="control-label form-label">First Name<span class="highlight">*</span></label>
                                         <input type="text" name="firstName" class="form-control form-input" placeholder="John" value="{{ user.email.first_name }}" 
                                         maxlength="20" minlength="3" required id="id_firstName">
                                     </div>
@@ -100,7 +100,6 @@
                                                     <input type="radio" name="gender" value="male" class="custom-control custom-radio custom-control-inline" id="id_gender_0"
                                                     {% if user.gender == "male" %}checked{% endif %}>Male
                                                 </label>
-
                                             </li>
                                             <li>
                                                 <label for="id_gender_1"><input type="radio" name="gender" value="female" class="custom-control custom-radio custom-control-inline" id="id_gender_1" {% if user.gender == "female" %}checked{% endif %}>
