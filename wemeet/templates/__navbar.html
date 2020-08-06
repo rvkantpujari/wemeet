@@ -17,12 +17,18 @@
             </div>
             <nav class="navigation collapse navbar-collapse pull-right">
                 <ul class="nav-links nav navbar-nav">
-                    <li><a href="{{nav_home}}" class="main-menu">Home</a></li>
+                    <li><a href="{% url 'home' %}" class="main-menu">Home</a></li>
                     <li class="dropdown"><a href="javascript:void(0)" class="main-menu">Account<span class="fa fa-angle-down icons-dropdown"></span></a>
                         <ul class="dropdown-menu edugate-dropdown-menu-1">
-                            <li><a href="{{nav_profile}}" class="link-page">Profile</a></li>
+                            <li><a href="{% url 'profile' %}" class="link-page">Profile</a></li>
                             <li><a href="{{nav_reset_password}}" class="link-page">Reset Password</a></li>
-                            <li><a href="{{nav_login}}" class="link-page">Logout</a></li>
+                            <li><a href="{% url 'logout' %}" class="link-page">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="javascript:void(0)" class="main-menu">Board<span class="fa fa-angle-down icons-dropdown"></span></a>
+                        <ul class="dropdown-menu edugate-dropdown-menu-1">
+                            <li><a href="{% url 'create_board' %}" class="link-page">Create</a></li>
+
                         </ul>
                     </li>
                 </ul>

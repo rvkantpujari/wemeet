@@ -17,7 +17,10 @@
                 <div class="register-table rlp-table">
                     <img src="{% static 'assets/images/logo.png' %}" style="height: 120px; width: 120px; margin-bottom: -20px;" alt="Logo" class="register"/>
                     <div class="register-title rlp-title">Register</div>
-                    <form method="POST" novalidate>
+                    {% if message %}
+                        <h4  class="text-danger"> {{ message }} </h4>
+                    {% endif %}
+                    <form method="POST">
                         {% csrf_token %}
                         <div class="register-form bg-w-form rlp-form">
                             <table>
@@ -31,7 +34,7 @@
                                     {% endfor %}
                                 </div>
                             </table>
-                            <a href="../login/">Already have an account?</a>
+                            <a href="{% url 'login'%}">Already have an account?</a>
                         </div>
                         <div class="register-submit">
                             <button type="submit" class="btn btn-register btn-green"><span>Register</span></button>

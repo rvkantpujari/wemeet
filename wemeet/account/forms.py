@@ -2,7 +2,7 @@ from django import forms
 from django.core import validators
 
 
-class regForm(forms.Form):
+class SignUpForm(forms.Form):
     firstName = forms.CharField(min_length=3, max_length=20, widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'John'}))
     lastName = forms.CharField(min_length=3, max_length=20, label='Last Name: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'Doe'}))
     email = forms.EmailField(validators=[validators.MaxLengthValidator(50)], label='Email: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
@@ -17,7 +17,7 @@ class regForm(forms.Form):
             self.add_error('password','Passwords did not match.')
 
 
-class loginForm(forms.Form):
+class LoginForm(forms.Form):
     email = forms.EmailField(max_length=50, label='Email: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
     password = forms.CharField(min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
 
