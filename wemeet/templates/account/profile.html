@@ -22,67 +22,99 @@
 <div class="section section-padding profile-teacher">
     <div class="container">
         <div class="profile-teacher-wrapper">
-            <form method="post" novalidate>
+            <form method="post" enctype="multipart/form-data">
                 <div class="teacher-info">
                     <div class="staff-item2 customize">
                         {% csrf_token %}
                         <div class="staff-item-wrapper row">
                             <div class="staff-info col-md-12">
                                 <span class="staff-avatar">
-                                    <img src="{% static 'assets/images/people-avatar-4.jpg' %}" alt="Profile Picture" class="img-responsive"/>
+                                    <img src="{% static user.profilePic %}" alt="Profile Picture" class="img-responsive"/>
                                 </span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12" style="display: grid; place-items: center;">
-                                {{form.profilePic.errors}}
-                                {{form.profilePic}}
+
+                                <input type="file" name="profilePic" accept="image/*" id="id_profilePic">
                             </div>
                         </div>
                     </div>
                     <div class="teacher-des">
                         <div class="content">
                             <div class="content-detail">
-                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.email.id_for_label}}" class="control-label form-label">{{form.email.label}}<span class="highlight">*</span></label>
-                                        {{form.email.errors}}
-                                        {{form.email}}
+                                        <label for="{{form.email.id_for_label}}" class="control-label form-label">Email<span class="highlight">*</span></label>
+                                        <input type="text" name="email" class="form-control form-input col-md-3"
+                                        value="{{ user.email.email}}" placeholder="johndoe@gmail.com" required id="id_email">
                                     </div>
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.alternateEmail.id_for_label}}" class="control-label form-label">{{form.alternateEmail.label}}</label>
-                                        {{form.alternateEmail.errors}}
-                                        {{form.alternateEmail}}
+                                        <label for="{{form.alternateEmail.id_for_label}}" class="control-label form-label">alternate Email</label>
+                                        {% if user.alerternatEmail %}
+                                        <input type="text" name="alternateEmail" class="form-control form-input" placeholder="johndoe@gmail.com"
+                                        value="{{ user.alternateEmail }}" 
+                                        id="id_alternateEmail">
+                                        {% else %}
+                                        <input type="text" name="alternateEmail" class="form-control form-input"
+                                        id="id_alternateEmail">
+                                        {% endif %}
+
                                     </div>
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.mobile.id_for_label}}" class="control-label form-label">{{form.mobile.label}}</label>
-                                        {{form.mobile.errors}}
-                                        {{form.mobile}}
+                                        <label for="{{form.mobile.id_for_label}}" class="control-label form-label">Mobile: </label>
+                                        {% if user.mobile %}
+                                        <input type="text" name="mobile" class="form-control form-input" value="{{ user.mobile }}" placeholder="9012345678" id="id_mobile">
+                                        {% else %}
+                                        <input type="text" name="mobile" class="form-control form-input" id="id_mobile">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.firstName.id_for_label}}" class="control-label form-label">{{form.firstName.label}}<span class="highlight">*</span></label>
-                                        {{form.firstName.errors}}
-                                        {{form.firstName}}
+                                        <label for="{{form.firstName.id_for_label}}" class="control-label form-label">First Name<span class="highlight">*</span></label>
+                                        <input type="text" name="firstName" class="form-control form-input" placeholder="John" value="{{ user.email.first_name }}" 
+                                        maxlength="20" minlength="3" required id="id_firstName">
                                     </div>
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.lastName.id_for_label}}" class="control-label form-label">{{form.lastName.label}}<span class="highlight">*</span></label>
-                                        {{form.lastName.errors}}
-                                        {{form.lastName}}
+                                         <label for="id_lastName" class="control-label form-label">Last Name: <span class="highlight">*</span></label>
+                                        
+                                        <input type="text" name="lastName" class="form-control form-input col-md-3" placeholder="Doe" value="{{ user.email.last_name }}" maxlength="20" minlength="3" required id="id_lastName">
                                     </div>
                                     <div class="col-md-4" style="margin-top: 15px;">
-                                        <label for="{{form.dob.id_for_label}}" class="control-label form-label">{{form.dob.label}}</label>
-                                        {{form.dob.errors}}
-                                        {{form.dob}}
+                                        <label for="id_dob" class="control-label form-label">Date of Birth: </label>
+                                        {% if user.dob %}
+                                        <input type="date" name="dob" value="{{ user.dob|date:'Y-m-d' }}" class="form-control form-input" id="id_dob">
+                                        {% else %}
+                                        <input type="date" name="dob" class="form-control form-input" id="id_dob">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6" style="margin-top: 15px;">
-                                        <label for="{{form.gender.id_for_label}}" class="control-label form-label">{{form.gender.label}}</label>
-                                        {{form.gender.errors}}
-                                        {{form.gender}}
+                                        <label for="id_gender_0" class="control-label form-label">Gender: </label>
+                                        
+                                        <ul id="id_gender" class="custom-control custom-radio custom-control-inline">
+                                            <li>
+                                                <label for="id_gender_0">
+                                                    <input type="radio" name="gender" value="male" class="custom-control custom-radio custom-control-inline" id="id_gender_0"
+                                                    {% if user.gender == "male" %}checked{% endif %}>Male
+                                                </label>
+
+                                            </li>
+                                            <li>
+                                                <label for="id_gender_1"><input type="radio" name="gender" value="female" class="custom-control custom-radio custom-control-inline" id="id_gender_1" {% if user.gender == "female" %}checked{% endif %}>
+                                                Female
+                                                </label>
+
+                                            </li>
+                                            <li>
+                                                <label for="id_gender_2"><input type="radio" name="gender" value="other" class="custom-control custom-radio custom-control-inline" id="id_gender_2"
+                                                {% if user.gender == "other" %}checked{% endif %}>
+                                                Other
+                                                </label>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                                 <br>
