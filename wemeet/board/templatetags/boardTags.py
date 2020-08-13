@@ -1,5 +1,5 @@
 from django import template
-from board.models import BoardMembers#, MemberPollChoice
+from board.models import BoardMembers, MemberPollChoice
 from django.db.models import Count
 from django.db.models import Q
 
@@ -20,11 +20,11 @@ def memberRole(board, user):
 
 
 
-# @register.filter(name='votedFor')
-# def votedFor(choice, user):
-# 	isVoted = MemberPollChoice.objects.filter(Q(choiceId = choice), Q(user = user)).first()
-# 	if isVoted:
-# 		return 1
-# 	else:
-# 		return 0
+@register.filter(name='votedFor')
+def votedFor(choice, user):
+	isVoted = MemberPollChoice.objects.filter(Q(choiceId = choice), Q(user = user)).first()
+	if isVoted:
+		return 1
+	else:
+		return 0
 

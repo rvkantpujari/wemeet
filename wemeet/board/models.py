@@ -39,4 +39,42 @@ class BoardMembers(models.Model):
 
 
 
+class Poll(models.Model):
+	pollId = models.AutoField(primary_key=True)
+	pollQuestion = models.CharField(max_length=200, null=False)
+	createdOn = models.DateTimeField()
+	deadLine = models.DateTimeField()
+	createdBy = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+	boardId = models.ForeignKey(Board, on_delete=models.CASCADE)
+	isActive = models.BooleanField(default=1)
+
+	def __str__(self):
+		return self.pollQuestion
+
+class Choices(models.Model):
+	choiceId = models.AutoField(primary_key=True)
+	choice = models.CharField(max_length=200, null=False)
+	count = models.IntegerField(default=0)
+	pollId = models.ForeignKey(Poll, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return str(self.pollId) + ": " + self.choice
+
+class MemberPollChoice(models.Model):
+
+	choiceId = models.ForeignKey(Choices, on_delete=models.CASCADE)
+	pollId = models.ForeignKey(Poll, on_delete=models.CASCADE)
+	user = models.ManyToManyField(User)
+
+
+class BoardInvitation(models.Model):
+	board = models.ForeignKey(Board, on_delete=models.CASCADE)
+	role = models.ForeignKey(Role, on_delete=models.CASCADE)
+	user = models.ManyToManyField(User)
+	status = models.CharField(max_length = 20)
+	invitationTime = models.DateTimeField()
+	responseTime = models.DateTimeField(null=True)
+
+
+
 
