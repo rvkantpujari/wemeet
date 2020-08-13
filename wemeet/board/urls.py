@@ -3,6 +3,6 @@ from . import views
 
 urlpatterns = [
     path('create/', views.CreateBoard.as_view(), name='create_board'),
-    # path('show_all/', views.ShowBoards.as_view(), name='show_all_board'),
-    # path('edit/<int:boardId>', views.EditBoard.as_view(), name='edit_board'),
+    path('join_board/', views.JoinBoard.as_view(), name='join_board'),
+    path('board_details/<int:boardId>', views.BoardDetails.as_view(), name='board_details'),
 ]
