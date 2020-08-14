@@ -21,9 +21,12 @@ class Home(View):
 		curr_user = request.user
 		created = BoardModel.objects.filter(createdBy=curr_user)
 		joined = BoardModel.objects.filter(boardmembers__user=curr_user)
-
+		pendingInvitations = BoardInvitation.objects.filter(Q(user=curr_user),
+			Q(status='pending'))
+		
 		return render(request ,'board/index.html', {'boardsCreated':created,
-			'boardsJoined':joined, 'user': curr_user,})
+			'boardsJoined':joined, 'user': request.user,
+			'pendingInvitations': pendingInvitations})
 
 
 

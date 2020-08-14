@@ -306,9 +306,9 @@
                                                             {{ member.user.first.last_name }}
                                                         </span>
                                                     </td>
-                                                    <td class="col-4"><i class="w20 fa fa-clock-o"></i>
+                                                    <td class="col-4">
                                                         <span>
-                                                            Role
+                                                            {{ board|memberRole:member.user.first }}
                                                         </span>
                                                     </td>
                                                 </tr>

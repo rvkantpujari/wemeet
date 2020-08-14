@@ -10,24 +10,25 @@
         <div class="courses-wrapper">
             <!-- Nav tabs-->
             <div class="row top-content">
-                <div class="col-md-4"></div>
-                <div class="col-md-4">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
                     <ul role="tablist" class="nav nav-tabs edugate-tabs">
-                        <li role="presentation" class="active"><a href="#campus" data-toggle="tab" class="text h5">Created By You</a></li>
-                        <li role="presentation"><a href="#education" data-toggle="tab" class="text h5">Joined By You</a></li>
+                        <li role="presentation" class="active"><a href="#campus" data-toggle="tab" class="text h4">Created By You</a></li>
+                        <li role="presentation"><a href="#education" data-toggle="tab" class="text h4">Joined By You</a></li>
+                        <li role="presentation"><a href="#invitations" data-toggle="tab" class="text h4">Invitations</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4"></div>
+                <div class="col-md-3"></div>
 
             </div>
             <!-- Tab panes-->
             <div class="tab-content courses-content">
                 <div id="campus" role="tabpanel" class="tab-pane fade in active">
                     <div class="style-show style-grid row">
-                        
+
                         {% if boardsCreated %}
                             {% for board in boardsCreated %}
-                                <div class="panel panel-default col-md-4" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
+                                <div class="panel panel-default col-md-4 hvr-float" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
                                       <!-- Default panel contents -->
                                       <div class="panel-heading">
                                         <a href="{% url 'board_details' boardId=board.boardId %}">
@@ -48,7 +49,6 @@
                                             </div>
                                           </div>
                                 </div>
-                                
                             {% endfor %}
                         {% else %}
                             
@@ -77,7 +77,7 @@
                         {% if boardsJoined %}
                             {% for board in boardsJoined %}
                                 <!-- <div class="col-md-1"></div> -->
-                                <div class="panel panel-default col-md-4" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
+                                <div class="panel panel-default col-md-4 hvr-float" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
                                       <!-- Default panel contents -->
                                       <div class="panel-heading">
                                         <a href="{% url 'board_details' boardId=board.boardId %}">
@@ -120,10 +120,88 @@
                         {% endif %}
                     </div>
                 </div>
-                
+                <div id="invitations" role="tabpanel" class="tab-pane fade">
+                    <div class="style-show style-grid row">
+                        {% if pendingInvitations %}
+                        {% for invitation in pendingInvitations %}
+                            <div class="panel panel-default col-md-4" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
+                                      <!-- Default panel contents -->
+                                <div class="panel-heading">
+                                <h4><i>{{ invitation.board.createdBy.first_name }} {{ invitation.board.createdBy.last_name }}</i> has invited you to join board <i>{{ invitation.board.boardTitle }}</i> As <i>{{ invitation.role }}</i>
+                                </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="tag-item">
+                                        Type: {{ invitation.board.boardType }}
+                                    </div><br>
+                                    <div>
+                                        <button type="button" class="btn btn-login btn-green" id="acceptInvitationBtn" onclick="acceptInvitation(this)" value="{% url 'accept_invitation' boardInvitationId=invitation.id %}"><span>Accept</span></button>
+                                        <button type="button" class="btn btn-login btn-green" id="rejectInvitationBtn" onclick="rejectInvitation(this)" value="{% url 'reject_invitation' boardInvitationId=invitation.id %}"><span>Reject</span></button>
+                                    </div>
+                                  </div>
+                            </div>
+                        {% endfor %}
+                        {% else %}
+                            
+                            <div class="col-style">
+                                <div class="edugate-layout-2">
+                                    <div class="edugate-layout-2-wrapper">
+                                        <div class="edugate-content">
+                                            <br><br>
+                                            <h3 class="title">Such an empty!!</h3>
+                                            <br>
+                                            <div class="description text-justify">
+                                                
+                                            <h3>You will see invitations here when someone invites you.</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
+<script>
+    // $('#acceptInvitationBtn').click(function()
+    function acceptInvitation(_this)
+    {
+        var token = '{{csrf_token}}';
+        $.ajax(
+        {
+            headers: { "X-CSRFToken": token },
+            type:"POST",
+            url: $(_this).val(),
+            data:{
+                    
+            },
+            success: function( data ) 
+            {
+                alert("Accepted successfully");
+            }
+         })
+    };
+    // $('#rejectInvitationBtn').click(function()
+    function rejectInvitation(_this)
+    {
+        var token = '{{csrf_token}}';
+        $.ajax(
+        {
+            headers: { "X-CSRFToken": token },
+            type:"POST",
+            url: $(_this).val(),
+            data:{
+                    
+            },
+            success: function( data ) 
+            {
+                alert("Rejected successfully");
+            }
+         })
+    };
+</script>
 {% endblock content %}
