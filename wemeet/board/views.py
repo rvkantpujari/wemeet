@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Board as BoardModel, BoardMembers, BoardMemberStatus
 from .models import Poll, Choices, MemberPollChoice, BoardInvitation
-from globaltables.models import BoardType, Role
+from globaltables.models import BoardType, Role, DefaultRole
 from django.db.models import Q
 from datetime import datetime, date, time
 import random
@@ -89,11 +89,7 @@ class JoinBoard(View):
 			print("you have already joined this board.")
 			return redirect('home')
 
-		role = None
-		if str(board.boardType) == 'Education':
-			role = Role.objects.get(role = 'Student')
-		else:
-			role = Role.objects.get(role = 'Team Member')
+		role = DefaultRole.objects.filter(boardType = board.boardType).first().role
 
 		status = BoardMemberStatus.objects.get(status = 'active')
 
