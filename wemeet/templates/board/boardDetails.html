@@ -1,0 +1,530 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Homepage | {{block.super}} {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+{% load boardTags %}
+<style>
+    .test:after {
+        content: '\2807';
+        font-size: 25px;
+    }
+</style>
+<div class="section section-padding courses">
+    <div class="container">
+        
+        <div class="courses-wrapper">
+
+            <div class="style-show style-grid row">
+                <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading text-left" style="background-color: #86bc42;">
+                        <h4>{{ board.boardTitle }}</h4>
+                    </div>
+                    <div class="panel-body text-justify">
+                        <br>
+                        <div style="font-size: 1.3rem">
+                            <h4>{{ board.boardDescription }}</h4>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div><br><br>
+            <!-- Nav tabs-->
+            <div class="row top-content">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <ul role="tablist" class="nav nav-tabs edugate-tabs">
+                        <li role="presentation" class="active"><a href="#posts" data-toggle="tab" class="text h4">Posts</a></li>
+                        <li role="presentation"><a href="#poll" data-toggle="tab" class="text h4">Poll</a></li>
+                        <li role="presentation"><a href="#people" data-toggle="tab" class="text h4">Members</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <!-- Tab panes-->
+            <div class="tab-content courses-content">
+                <div id="posts" role="tabpanel" class="tab-pane fade in active">
+                    <div class="style-show style-grid row">
+                        <div class="col-sm-12">
+                            <div class="news-detail">
+                                <div class="news-comment">
+                                    {% if isOwner %}
+                                    <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;">
+                                        <!-- Default panel contents -->
+                                        <div class="panel-heading text-left">
+                                            <h4>Create New Post</h4>
+                                        </div>
+                                        <div class="panel-body text-justify">
+                                            <br>
+                                            <div style="font-size: 1.3rem">
+                                                <div class="col-md-12">
+                                                    <form action="" method="POST">
+                                                        <input type="text" name="" id="id_postTitle" placeholder="Enter The Post Title" class="form-control form-input" required>
+                                                        <br>
+                                                        <textarea name="" id="postForm" cols="3" class="form-control" style="resize: vertical; height: 100px;" placeholder="Enter Post Description" cols="5" required></textarea>
+                                                        <br>
+                                                        <span id="attachedFilesList" class="row"></span>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-login btn-green" id="postBtn"><span>Post</span></button>
+                                                        <input type="file" name="file" id="fileUpload" multiple onchange="previewFiles(event);">
+                                                        &nbsp;&nbsp;
+                                                        <button type="button" class="btn btn-login btn-green" onclick='$("#fileUpload").click()'>
+                                                            <span class="fa fa-paperclip fa-lg"> Add</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <br>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <br><br>
+                                    <h1 class="news-comment-title">Posts</h1>
+                                    <br><br>
+                                    <ul class="comment-list list-unstyled">
+                                        <li class="media">
+                                            <div class="list-item">
+                                                <div class="media-left"><a href="#" class="media-image"></a></div>
+                                                <div class="media-body">
+                                                    <div class="pull-left">
+                                                        <div class="info">
+                                                            <div class="reader item"><a href="#">Charlotte</a></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="pull-right">
+                                                        <div class="dropdown" style="cursor:pointer;">
+                                                            <div class="test dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            </div>
+                                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                                <li><a href="#" class="link-page">Edit</a></li>
+                                                                <li><a href="#" class="link-page">Delete</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                    <div class="time" style="margin-top: 10px;">March 23, 2017 at 7:59 pm</div>
+                                                    <div class="des" style="margin-top: 10px;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p></div>
+                                                    <div class="pull-right">
+                                                        <button type="submit" class="btn btn-login btn-green"><span>View Post</span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="poll" role="tabpanel" class="tab-pane fade">
+                    {% if user == board.createdBy %}    
+                        <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;margin-bottom: 100px;">
+                            <!-- Default panel contents -->
+                            <div class="panel-heading text-left">
+                                <h4>Create Poll</h4>
+                            </div>
+                            <div class="panel-body text-justify">
+                                <br>
+                                <div style="font-size: 1.3rem">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <form action="{% url 'create_poll' boardId=board.boardId %}" method="POST">
+                                            {% csrf_token %}
+                                            <label for="question" class="control-label form-label">Question: <span class="highlight">*</span></label>
+                                            <input type="text" class="form-control control-input" name="pollQuestion" required><br>
+                                            <label for="deadline" class="control-label form-label">Deadline: <span class="highlight">*</span></label>
+                                            <input type="date" name="deadlineDate" class="form-control control-input" required>
+                                            <input type="time" name="deadlineTime" class="form-control control-input" required><br>
+                                            <label for="totalChoices" class="control-label form-label">Number of Choices: (Maximum 10) <span class="highlight">*</span></label>
+                                            <input type="number" id="choice" class="form-control control-input" name="choice" value="2" max=10 min=2 required><br />
+                                            <div id="container"></div>
+                                            <br>
+                                            <a id="filldetails" class="btn btn-login btn-green" onclick="addFields()"><span>Add Choices</span></a>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <button type="submit" name="submit" class="btn btn-login btn-green"><span>Create Poll</span></button>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+
+                        {% if polls %}
+                        <br><br>
+                        <h1 class="news-comment-title">Polls</h1>
+                        <br><br>
+                        {% endif %}
+                        {% for poll in polls %}
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col-md-1"></div>
+                                <div class="panel panel-default col-md-10 hvr hvr-float" style="border: solid 1px #86bc42; margin-left: 5px;">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading">
+                                        <h3>{{ poll.pollQuestion }}</h3>
+                                        {% now "Y-m-d H:i:s.u" as todays_date %}
+                                        {% if poll.isActive %}
+                                            <h4 style="color: green;">Active</h4>
+                                        {% else %}
+                                            <h4 style="color: red;">Closed</h4>
+                                        {% endif %}
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="course-table col-md-12">
+                                            <div class="table-header">
+                                                <table class="edu-table-responsive">
+                                                    <thead>
+                                                    <tr class="heading-table">
+                                                        <th class="col-3 h3">Choice</th>
+                                                        <th class="col-3 h3">Votes</th>
+                                                    </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                            <div class="table-body">
+                                                <table class="edu-table-responsive table-hover">
+                                                    <tbody>
+                                                    {% for choice in poll.choices_set.all %}
+                                                    <tr class="table-row" style="text-transform:capitalize;">
+                                                        <td class="left col-3">
+                                                            <span class="h4">
+                                                                {{ choice.choice }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="col-3">
+                                                            <span class="h4">
+                                                                {{ choice.count }}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+                        {% if polls %}
+                        <h1 class="news-comment-title">Polls</h1>
+                        <br><br>
+                        {% endif %}
+                        {% for poll in polls %}
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-md-1"></div>
+                            <div class="panel panel-default col-md-10 hvr hvr-float" style="border: solid 1px #86bc42; margin-left: 5px;">
+                                <!-- Default panel contents -->
+                                <div class="panel-heading">
+                                    <h3>{{ poll.pollQuestion }}</h3>
+                                    {% now "Y-m-d H:i:s.u" as todays_date  %}
+                                    {% if poll.isActive %}
+                                        <h4 style="color: green;">Active</h4>
+                                    {% else %}
+                                        <h4 style="color: red;">Closed</h4>
+                                    {% endif %}
+                                </div>
+                                <div class="panel-body">
+                                    {% if poll.isActive %}
+                                        <form>
+                                            {% csrf_token %}
+                                            <ul class="list-group">
+                                                {% for choice in poll.choices_set.all %}
+                                                <li class="list-group-item h4">
+                                                <input type="radio" name="choice" class="choice " value="{{ choice.choiceId }}"
+                                                {% if choice|votedFor:user %}checked{% endif %}>
+                                                    {{ choice.choice }}
+                                                {% endfor %}
+                                                </li>
+                                            </ul>
+                                        </form>
+                                    {% else %}
+                                        <ul class="list-group">
+                                        {% for choice in poll.choices_set.all %}
+                                            <h4>
+                                                <li class="list-group-item">
+                                                    {{ choice.choice }}| {{ choice.count }}
+                                                </li>
+                                            </h4>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <div id="people" role="tabpanel" class="tab-pane fade">
+                    <div class="row" style="font-size: 1.8rem; margin-top: 10px; margin-bottom: 100px;">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="course-syllabus">
+                                <div>
+                                    <span class="course-syllabus-title underline layout-left">Members</span>
+                                    {% if isOwner %}
+                                        <button type="button" class="btn btn-login btn-green layout-right" data-toggle="modal" data-target="#invitePeopleModal">
+                                            <span>
+                                                Add Member
+                                                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                            </span>
+                                        </button><br>
+                                    {% endif %}
+                                </div>
+                                {% if members %}
+                                    <div class="course-table">
+                                        <div class="table-header">
+                                            <table class="edu-table-responsive">
+                                                <thead>
+                                                <tr class="heading-table">
+                                                    <th class="col-4">First Name</th>
+                                                    <th class="col-4">Last Name</th>
+                                                    <th class="col-4">Role</th>
+                                                </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                        <div class="table-body">
+                                            <table class="edu-table-responsive table-hover">
+                                                <tbody>
+                                                {% for member in members %}
+                                                <tr class="table-row" style="text-transform:capitalize;">
+                                                    <td class="left col-4">
+                                                        <span>
+                                                            {{ member.user.first.first_name }} 
+                                                        </span>
+                                                    </td>
+                                                    <td class="col-4">
+                                                        <span>
+                                                            {{ member.user.first.last_name }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="col-4">
+                                                        <span>
+                                                            {{ board|memberRole:member.user.first }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-style">
+                                        <div class="edugate-layout-2">
+                                            <div class="edugate-layout-2-wrapper">
+                                                <div class="edugate-content">
+                                                    <br><br>
+                                                    <h3 class="title">No one has joined this board yet</h3>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Invite People Code -->
+{% if isOwner %}
+    <div class="modal fade" id="invitePeopleModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3 class="modal-title">Invite People</h3>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <form id="invitePeopleForm">
+                        <label for="id_title" class="control-label form-label">Email: <span class="highlight">*</span></label>
+                        <input type="email" name="email" id="email" placeholder="john@gmail.com" class="form-control form-input" required>
+                        <br>
+                        <select name="role" id="role" class="form-control form-input" required>
+                        <option value="" disabled selected>Select Role</option>
+                        {% for role in roles %}
+                            <option value="{{ role.roleId }}">{{ role.role }}</option>
+                        {% endfor %}
+                        </select>
+                        <br>
+                        <button type="submit" data-target="#invitePeopleModal" class="btn btn-login btn-green" id="invteBtn"><span>Invite</span></button>
+                        <br>
+                    </form>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <script>
+        // Invite People Form Script
+        var token = '{{csrf_token}}';
+        $('#invteBtn').click(function()
+        {
+            var choice;
+            var email = document.querySelector('#invitePeopleForm #email');
+            var role = document.querySelector('#invitePeopleForm #role');
+            boardId = "{{ board.boardId }}";
+            console.log(email);
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": token },
+                type:"POST",
+                url: "{% url 'invite_people' %}",
+                
+                data:{
+                        email: email.value,
+                        boardId: boardId,
+                        roleId: role.value,
+                },
+                success: function( data ) 
+                {
+                    email.value = '';
+                    role.value = -1;
+                    console.log("invted successfully");
+                }
+             })
+        });
+    </script>
+{% endif %}
+<!-- create post's script code -->
+{% if isOwner %}
+<script>
+    // Post and File Attachment Script
+    let attachedFilesList = document.getElementById('attachedFilesList');
+    let fileNum = 0;
+    let filesList = [];
+    let fileUpload = document.getElementById('fileUpload');
+
+    fileUpload.addEventListener('click', function()
+    {
+        this.value = "";
+        //e.firstElementChild can be used. 
+        var child = attachedFilesList.lastElementChild;  
+        while (child) { 
+            attachedFilesList.removeChild(child); 
+            child = attachedFilesList.lastElementChild; 
+        }
+        filesList = [];
+    });
+
+    function previewFiles(e)
+    {
+        let filesCount = e.target.files.length;
+        if(filesCount > 0)
+        {
+            let ulEle = document.createElement('ul');
+            ulEle.className = 'list-group';
+            for(let i = 1; i <= filesCount; i++)
+            {
+                for(let f of filesList)
+                {
+                    if(f===e.target.files[i-1].name)
+                        return;
+                }
+                let liEle = document.createElement('li');
+                liEle.className = 'list-group-item';
+                filesList.push(e.target.files[i-1].name);
+                let file = e.target.files[i-1];
+                let fileName = file.name;
+                let fileSize = file.size;
+                let sizeText = '';
+                let content = document.createTextNode(fileName+ '  ('+ formatFileSize(fileSize)+')');
+                liEle.appendChild(content);
+                ulEle.appendChild(liEle);
+            }
+            attachedFilesList.appendChild(ulEle);
+        }
+    }
+
+    $(document).ready(function(){
+        $('#fileUpload').hide();
+    });
+
+    let postBtn = document.getElementById('postBtn');
+    postBtn.addEventListener("submit", function(e){
+        e.preventDefault();
+    });
+
+    function formatFileSize(bytes, decimalPoint) {
+        if(bytes == 0) 
+            return '0 Bytes';
+        dm = decimalPoint || 2;
+        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        i = Math.floor(Math.log(bytes) / Math.log(1000));
+        return parseFloat((bytes / Math.pow(1000, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    
+    //script for add choices input and ajax fun for voting
+
+    function addFields()
+    {
+        // Number of inputs to create
+        var number = document.getElementById("choice").value;
+        console.log(number);
+        if(number>1 && number<11)
+        {
+            // Container <div> where dynamic content will be placed
+            var container = document.getElementById("container");
+            // Clear previous contents of the container
+            while (container.hasChildNodes()) {
+                container.removeChild(container.lastChild);
+            }
+            for (i=1;i<=number;i++){
+                // Append a node with a random text
+                container.appendChild(document.createTextNode("Choice " + (i)));
+                // Create an <input> element, set its type and name attributes
+                var input = document.createElement("input");
+                input.type = "text";
+                input.name = "choice" + i;
+                input.className = 'form-control control-input';
+                input.setAttribute('required', true);
+                input.setAttribute('minlength', 2);
+                input.required = true;
+                container.appendChild(input);
+                // Append a line break 
+                container.appendChild(document.createElement("br"));
+            }
+        }
+    }
+</script>
+{% endif %}
+
+<script type='text/javascript'>
+        $('.choice').click(function()
+    {
+        var choice;
+        choice = $(this).val();
+
+        $.ajax(
+        {
+            type:"GET",
+            url: "{% url 'save_poll_vote' %}",
+            data:{
+                    choiceId: choice,
+            },
+            success: function( data ) 
+            {
+                alert("voted successfully");
+            }
+         })
+    });
+</script>
+{% endblock content %}

@@ -8,7 +8,7 @@
     <div class="container">
         <div class="header-main-wrapper">
             <div class="navbar-header">
-                <div class="logo pull-left">
+                <div class="logo pull-left hvr-grow">
                     <a href="{{nav_home}}" class="header-logo">
                         <img src="{% static 'assets/images/logo.png' %}" style="height: 80px; width: 80px;" alt=""/>
                     </a>
@@ -17,18 +17,21 @@
             </div>
             <nav class="navigation collapse navbar-collapse pull-right">
                 <ul class="nav-links nav navbar-nav">
-                    <li><a href="{% url 'home' %}" class="main-menu">Home</a></li>
-                    <li class="dropdown"><a href="javascript:void(0)" class="main-menu">Account<span class="fa fa-angle-down icons-dropdown"></span></a>
+                    <li class="hvr-grow"><a href="{% url 'home' %}" class="main-menu">Home</a></li>
+                    <li class="dropdown hvr-grow"><a href="javascript:void(0)" class="main-menu">Account<span class="fa fa-angle-down icons-dropdown"></span></a>
                         <ul class="dropdown-menu edugate-dropdown-menu-1">
                             <li><a href="{% url 'profile' %}" class="link-page">Profile</a></li>
-                            <li><a href="{{nav_reset_password}}" class="link-page">Reset Password</a></li>
+                            <li><a href="{% url 'reset_password' %}" class="link-page">Reset Password</a></li>
                             <li><a href="{% url 'logout' %}" class="link-page">Logout</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown"><a href="javascript:void(0)" class="main-menu">Board<span class="fa fa-angle-down icons-dropdown"></span></a>
+                    <li class="dropdown hvr-grow"><a href="javascript:void(0)" class="main-menu">Board<span class="fa fa-angle-down icons-dropdown"></span></a>
                         <ul class="dropdown-menu edugate-dropdown-menu-1">
                             <li>
-                                <a href="{% url 'create_board' %}" class="link-page" data-toggle="modal" data-target="#myModal">Create</a>
+                                <a class="link-page" data-toggle="modal" id="createBoardBtn" data-target="#createBoardModal">Create</a>
+                            </li>
+                            <li>
+                                <a class="link-page" id="joinBoardBtn" data-toggle="modal" data-target="#joinBoardModal">Join</a>
                             </li>
                         </ul>
                     </li>
@@ -37,8 +40,8 @@
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog">
+<!-- Create board modal -->
+<div class="modal" id="createBoardModal" role="dialog">
     <div class="modal-dialog">
       <!-- Modal content-->
       <div class="modal-content">
@@ -49,21 +52,23 @@
         <div class="modal-body row">
             <div class="col-md-2"></div>
             <div class="col-md-8">
-                <form method="post">
+                <form action="{% url 'create_board' %}" method="POST" id="createBoardForm">
+                    {% csrf_token %}
                     <label for="id_title" class="control-label form-label">Board Title: <span class="highlight">*</span></label>
-                    <input type="text" name="title" id="id_title" placeholder="Eg. Core JAVA or Group Project" class="form-control form-input" required>
+                    <input type="text" name="boardTitle" id="id_title" placeholder="Eg. Core JAVA or Group Project" class="form-control form-input" required>
                     <br>
                     <label for="id_description" class="control-label form-label">Board Description: </label>
-                    <textarea name="description" id="id_description" cols="30" rows="5" class="form-control form-input"></textarea>
+                    <textarea name="boardDescription" id="id_description" cols="30" rows="5" class="form-control form-input"></textarea>
                     <br>
                     <label for="id_board_type" class="control-label form-label">Board Type: <span class="highlight">*</span></label>
-                    <select name="board_type" id="id_board_type" class="form-control form-input" required>
-                        <option value="-1" disabled selected>Select Board Type</option>
-                        <option value="1">Education</option>
-                        <option value="2">Organization</option>
+                    <select name="boardType" id="id_board_type" class="form-control form-input" required>
+                        <option value="" disabled selected>Select Board Type</option>
+                        {% for board in boardTypes %}
+                            <option value="{{ board.boardTypeId }}">{{ board.boardType }}</option>
+                        {% endfor %}
                     </select>
                     <br>
-                    <button type="button" class="btn btn-login btn-green" data-dismiss="modal"><span>Create</span></button>
+                    <button type="submit" data-target="#createBoardModal" class="btn btn-login btn-green" id="createButton"><span>Create</span></button>
                     <br>
                 </form>
             </div>
@@ -72,3 +77,43 @@
       </div>
     </div>
 </div>
+<script type="text/javascript">
+  function submit_create_board_form() {
+    document.getElementById("createBoardForm").submit();
+   }    
+</script>
+
+<!-- join board modal -->
+<div class="modal fade" id="joinBoardModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3 class="modal-title">Join Board</h3>
+        </div>
+        <div class="modal-body row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <form action="{% url 'join_board' %}" method="POST" id="joinBoardForm">
+                    {% csrf_token %}
+                    <label for="id_title" class="control-label form-label">Board Code: <span class="highlight">*</span></label>
+                    <input type="text" name="token" id="id_title" placeholder="enter code here" class="form-control form-input" required>
+                    <br>
+
+                    <button type="submit" data-target="#joinBoardModal" class="btn btn-login btn-green" id="joinButton"><span>Join</span></button>
+                    <br>
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+      </div>
+    </div>
+</div>
+<script type="text/javascript">
+    let createBoardForm = document.getElementById('createBoardForm');
+    let joinBoardForm = document.getElementById('joinBoardForm');
+
+    createBoardForm.addEventListener('submit', function(e){});
+    joinBoardForm.addEventListener('submit', function(e){});
+</script>

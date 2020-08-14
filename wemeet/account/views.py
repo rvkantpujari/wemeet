@@ -11,6 +11,7 @@ from .models import UserDetails
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 import os
 from django.conf import settings
 from PIL import Image
@@ -22,10 +23,9 @@ class LoginView(View):
             fm = LoginForm()
             return render(request, 'account/login.html', {'form':fm})
         else:
-            return HttpResponseRedirect('/account/profile/')
+            return redirect('home')
 
     def post(self, request):
-        print('hello')
         email = request.POST.get('email', '')
         password = request.POST.get('password', '')
 
@@ -48,7 +48,7 @@ class LoginView(View):
                 'message':'Email and Password didnot match'})
 
         verified = UserDetails.objects.get(email=user).isVerified
-        print('verified: ', verified)
+        
         if not verified:
             return render(request, 'account/login.html', {'form': fm,
                 'message':'Please verify your E-mail. link sent to your email.'})
@@ -56,7 +56,7 @@ class LoginView(View):
         auth.login(request, user)
         user.lastLogin = datetime.now()
         user.save()
-        return HttpResponseRedirect('/account/profile/')
+        return redirect('home')
     
 
 class Register(View):
@@ -83,7 +83,7 @@ class Register(View):
                 'message':'E-mail already exist'})
 
         uname = self.generate_username(fname, lname)
-        print(uname)
+
         user = User(
             email = email,
             first_name = fname, last_name = lname,
@@ -97,7 +97,6 @@ class Register(View):
         userDetails = UserDetails(email=user, profilePic=profilePic)
         userDetails.save()
 
-        print(user.email)
         return redirect('/account/login/')
 
     def generate_username(self, fname, lname):
@@ -146,6 +145,7 @@ class Profile(View):
                 alternateEmail = alternateEmail
             )
         request_file = request.FILES['profilePic'] if 'profilePic' in request.FILES else None
+        
         if request_file:
 
             profilePicName = curr_user.username+'.png'
@@ -169,45 +169,25 @@ class Profile(View):
                 profilePic = profilePicPath
             )
 
-            print('saved pic: ',(image.size))
-
-
         return redirect('profile')
 
 
+@method_decorator(login_required, name='dispatch')
+class ChangeUserPassowrd(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            HttpResponseRedirect('/account/profile/')
+        fm = PasswordChangeForm(user = request.user)
+        return render(request, 'account/changepassword.html', {'form':fm})
 
+    def post(self, request):
+        fm = PasswordChangeForm(user = request.user, data = request.POST)
 
-
-
-
-
-
-
-
-
-
-
-def resetPassword(request):
-    if request.method == 'POST':
-        fm = resetPasswordForm(request.POST)
         if fm.is_valid():
-            print('Form validated')
-            print('email ', fm.cleaned_data['email'])
-    else:
-        fm = resetPasswordForm()
-    return render(request, 'account/reset-password.html', {'form': fm})
-
-def forgotPassword(request):
-    if request.method == 'POST':
-        fm = forgotPasswordForm(request.POST)
-        if fm.is_valid():
-            print('Form validated')
-            print('email ', fm.cleaned_data['email'])
-    else:
-        fm = forgotPasswordForm()
-    return render(request, 'account/forgot-password.html', {'form': fm})
-
-
+            fm.save()
+            update_session_auth_hash(request, fm.user)
+            return HttpResponseRedirect('/account/profile/')
+        return render(request, 'account/changepassword.html', {'form':fm})
 
 
 class LogoutView(View):
@@ -215,3 +195,5 @@ class LogoutView(View):
         if request.user.is_authenticated:
             logout(request)
         return HttpResponseRedirect('/account/login/')
+
+
