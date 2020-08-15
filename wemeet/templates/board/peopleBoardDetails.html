@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Homepage | {{block.super}} {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+{% load accessTags %}
+{% load hasAccessTags %}
+{% with boardMember|currentAccesses as currentAccesses %}
+{% with board|getUsersAccessRights:user as hasRight %}
+
+<h4> board: {{ boardMember.boardId.first.boardTitle }}
+<h4> People: {{ boardMember.user.first.first_name }}
+<h4> Role: 
+	{% for role in  boardMember.roleId.all %}
+         <span>{{ role.role }}</span>
+    {% endfor %}
+<br><br>
+<h2>Permissions: </h2>
+{% if hasRight.GIVE_PERMISSION %}
+	{% for right in accessRights %}
+		<h4><input type="checkbox" name="accessRight" value="{{ right.id }}"
+			class="access_right_class"
+		{% if currentAccesses|hasAccess:right %} checked {% endif %}>
+		 {{ right }} </h4>
+	{% endfor %}
+{% else %}
+	{% for right in accessRights %}
+		{% if currentAccesses|hasAccess:right %}
+			<h4> {{ right }} </h4>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+{% endwith %}
+{% endwith %}
+<script>
+      $(".access_right_class").change(function()
+      {
+        	var isChanged = $(this).is(':checked') ? 1 : 0;
+        	var accessRightId = $(this).val();
+        	var boardMemberId = "{{ boardMember.id }}";
+        	if(isChanged)
+        	{
+        		var token = '{{csrf_token}}';
+        		console.log(token);
+		        $.ajax(
+		        {
+		            headers: { "X-CSRFToken": token },
+		            type:"POST",
+		            url: "{% url 'grant_right' %}",
+		            data:{
+		                accessRightId: accessRightId,
+						boardMemberId: boardMemberId,
+		            },
+		            success: function( data ) 
+		            {
+		                alert("Right Granted");
+		            }
+		         });
+        	}
+        	else
+        	{
+        		var token = '{{csrf_token}}';
+        		console.log(token);
+		        $.ajax(
+		        {
+		            headers: { "X-CSRFToken": token },
+		            type:"POST",
+		            url: "{% url 'revoke_right' %}",
+		            data:{
+		                accessRightId: accessRightId,
+						boardMemberId: boardMemberId,
+		            },
+		            success: function( data ) 
+		            {
+		                alert("Right Revoked");
+		            }
+		         });
+        	}
+      });
+</script>
+{% endblock content %}

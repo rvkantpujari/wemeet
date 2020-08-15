@@ -27,3 +27,11 @@ class DefaultRole(models.Model):
 	role = models.OneToOneField(Role, on_delete=models.CASCADE)
 
 
+class AccessRights(models.Model):
+	accessRightCode = models.CharField(max_length=30)
+	accessRightDescription = models.CharField(max_length=100)
+
+	def __str__(self):
+		return self.accessRightDescription
+
+
