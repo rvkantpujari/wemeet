@@ -5,10 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 class BoardType(models.Model):
-	boardTypeId = models.IntegerField(primary_key=True, validators=[
-            MaxValueValidator(9),
-            MinValueValidator(1)
-        ])
+	boardTypeId = models.AutoField(primary_key=True)
 	boardType = models.CharField(max_length=50)
 
 	def __str__(self):
@@ -17,8 +14,24 @@ class BoardType(models.Model):
 
 class Role(models.Model):
 	boardTypeId = models.ForeignKey(BoardType, on_delete=models.CASCADE)
-	roleId = models.IntegerField(primary_key=True, validators=[
-            MaxValueValidator(99),
-            MinValueValidator(1)
-        ])
+	roleId = models.AutoField(primary_key=True)
 	role = models.CharField(max_length=20)
+
+	def __str__(self):
+
+		return self.role
+
+
+class DefaultRole(models.Model):
+	boardType = models.OneToOneField(BoardType, on_delete=models.CASCADE)
+	role = models.OneToOneField(Role, on_delete=models.CASCADE)
+
+
+class AccessRights(models.Model):
+	accessRightCode = models.CharField(max_length=30)
+	accessRightDescription = models.CharField(max_length=100)
+
+	def __str__(self):
+		return self.accessRightDescription
+
+
