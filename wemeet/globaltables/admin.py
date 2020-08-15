@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BoardType, Role, DefaultRole
+from .models import BoardType, Role, DefaultRole, AccessRights
 # Register your models here.
 
 
@@ -18,5 +18,11 @@ class RoleAdmin(admin.ModelAdmin):
 @admin.register(DefaultRole)
 class DefaultRoleAdmin(admin.ModelAdmin):
 	list_display = ['boardType', 'role']
+
+
+@admin.register(AccessRights)
+class AccessRightsAdmin(admin.ModelAdmin):
+	list_display = ['accessRightCode', 'accessRightDescription']
+
 
 
