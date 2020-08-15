@@ -20,3 +20,10 @@ class Role(models.Model):
 	def __str__(self):
 
 		return self.role
+
+
+class DefaultRole(models.Model):
+	boardType = models.OneToOneField(BoardType, on_delete=models.CASCADE)
+	role = models.OneToOneField(Role, on_delete=models.CASCADE)
+
+
