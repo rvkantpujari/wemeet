@@ -6,8 +6,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Board as BoardModel, BoardMembers, BoardMemberStatus
-from .models import Poll, Choices, MemberPollChoice, BoardInvitation
-from globaltables.models import BoardType, Role, DefaultRole
+from .models import Poll, Choices, MemberPollChoice, BoardInvitation,BoardMembersAccessRights
+from post.models import Post 
+from globaltables.models import BoardType, Role, DefaultRole, AccessRights
 from django.db.models import Q
 from datetime import datetime, date, time
 import random
@@ -37,9 +38,10 @@ class CreateBoard(View):
 		boardTitle = request.POST['boardTitle']
 		boardDescription = request.POST['boardDescription']
 		boardTypeId = request.POST['boardType']
+		curr_user = request.user
 
 		boardType = BoardType.objects.get(pk = boardTypeId)
-		createdBy = request.user
+		createdBy = curr_user
 		createdOn = datetime.now()
 
 		token = self.generate_token(6)
@@ -54,6 +56,24 @@ class CreateBoard(View):
 			)
 		newBoard.save()
 
+		role = Role.objects.filter(Q(boardTypeId=boardType), Q(role="Admin")).first()
+		status = BoardMemberStatus.objects.get(status = 'active')
+
+		joinBoard = BoardMembers(
+				addedOn = datetime.now(),
+				statusId =  status
+			)
+
+		joinBoard.save()
+		joinBoard.boardId.add(newBoard)
+		joinBoard.user.add(curr_user)
+		joinBoard.roleId.add(role)
+
+		for access in AccessRights.objects.all():
+			giveAccessRight = BoardMembersAccessRights(boardMember = joinBoard)
+			giveAccessRight.save()
+			giveAccessRight.accessRight.add(access)
+
 		return redirect('home')
 
 
@@ -67,6 +87,14 @@ class CreateBoard(View):
 
 @method_decorator(login_required, name='dispatch')
 class JoinBoard(View):
+	defaultAccessRights = []
+
+	def __init__(self):
+		defaultAccessCodes = ['VIEW_POST', 'GIVE_VOTE', 'VIEW_POLL_RESULT', 'POST_COMMENT']
+
+		for code in defaultAccessCodes:
+			accessRight = AccessRights.objects.get(accessRightCode = code)
+			self.defaultAccessRights.append(accessRight)
 
 	def post(self, request):
 		token = request.POST['token']
@@ -89,19 +117,24 @@ class JoinBoard(View):
 			print("you have already joined this board.")
 			return redirect('home')
 
-		role = DefaultRole.objects.filter(boardType = board.boardType).first().role
-
+		role = DefaultRole.objects.filter(boardType = board.boardType).first()
+		
 		status = BoardMemberStatus.objects.get(status = 'active')
 
 		joinBoard = BoardMembers(
 				addedOn = datetime.now(),
-				roleId = role,
 				statusId =  status
 			)
 		
 		joinBoard.save()
 		joinBoard.boardId.add(board)
 		joinBoard.user.add(curr_user)
+		joinBoard.roleId.add(role)
+
+		for access in self.defaultAccessRights:
+			giveAccessRight = BoardMembersAccessRights(boardMember = joinBoard)
+			giveAccessRight.save()
+			giveAccessRight.accessRight.add(access)
 
 		return redirect(request.META['HTTP_REFERER'])
 
@@ -132,10 +165,11 @@ class BoardDetails(View):
 
 		polls = Poll.objects.filter(boardId = board)
 		roles = Role.objects.filter(boardTypeId = board.boardType)
+		posts = Post.objects.filter(boardId = board)
 		
 		return render(request, 'board/boardDetails.html',
-			{'board':board, 'members':members, 'user': request.user,'polls':polls,
-			'isOwner': isOwner, 'roles': roles})
+			{'board':board, 'members':members, 'user': curr_user,'polls':polls,
+			'isOwner': isOwner,'posts':posts, 'roles': roles})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -286,13 +320,13 @@ class AcceptBoardInvitation(View):
 
 		joinBoard = BoardMembers(
 				addedOn = datetime.now(),
-				roleId = role,
 				statusId =  status
 			)
 		
 		joinBoard.save()
 		joinBoard.boardId.add(board)
 		joinBoard.user.add(curr_user)
+		joinBoard.roleId.add(role)
 
 		invitation.status = 'accepted'
 		invitation.save()
@@ -314,7 +348,7 @@ class RejectBoardInvitation(View):
 		curr_user = request.user
 		if board is None:
 			print("board not found")
-			return HttpResponse('success') 
+			return HttpResponse('success')
 		if board.isDeleted:
 			print("board not found")
 			return HttpResponse('success')
@@ -324,6 +358,57 @@ class RejectBoardInvitation(View):
 
 		return HttpResponse('success')
 
+
+@method_decorator(login_required, name='dispatch')
+class PeopleBoardDetails(View):
+	def get(self, request, boardMemberId):
+		try:
+			boardMember = BoardMembers.objects.get(pk = boardMemberId)
+		except boardMember.DoesNotExist:
+			boardMember = None
+		accessRights = AccessRights.objects.all()
+		board = BoardModel.objects.filter(boardId = boardMember.boardId.first().boardId).first()
+		curr_user = request.user
+		return render(request, 'board/peopleBoardDetails.html',
+			{'boardMember':boardMember, 'accessRights':accessRights,
+			'board':board, 'user':curr_user})
+
+
+@method_decorator(login_required, name='dispatch')
+class RevokeAccessRight(View):
+
+	def post(self, request):
+		accessRightId = request.POST['accessRightId']
+		boardMemberId = request.POST['boardMemberId']
+		
+		try:
+			obj = BoardMembersAccessRights.objects.filter(
+					boardMember = boardMemberId,
+					accessRight = accessRightId
+				).first().delete()
+
+		except:
+			return HttpResponse('success')
+		return HttpResponse('success')
+
+
+@method_decorator(login_required, name='dispatch')
+class GrantAccessRight(View):
+
+	def post(self, request):
+		accessRightId = request.POST['accessRightId']
+		boardMemberId = request.POST['boardMemberId']
+
+		try:
+			right = AccessRights.objects.get(pk = accessRightId)
+			boardMember = BoardMembers.objects.get(pk = boardMemberId)
+
+			giveAccessRight = BoardMembersAccessRights(boardMember = boardMember)
+			giveAccessRight.save()
+			giveAccessRight.accessRight.add(right)
+		except BoardMembersAccessRights.DoesNotExist:
+			return HttpResponse('success')
+		return HttpResponse('success')
 
 
 

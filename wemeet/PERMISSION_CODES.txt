@@ -1,0 +1,23 @@
+AccessRights
+
+id  accessRightCode		accessRightDescription
+
+1	CREATE_POST			user can create board posts
+2	UPDATE_POST			user can update any posts in board
+3	DELETE_POST			user can delete any posts in board
+4	VIEW_POST 			user can view board posts
+5	CREATE_POLL			user can create board polls
+6	DELETE_POLL			user can delete any poll in board
+7	GIVE_VOTE			user can give vote in board polls
+8	VIEW_POLL_RESULT	user can see polls result
+9	POST_COMMENT		user can comment on board posts
+10	DELETE_COMMENT		user can delete any comment in board
+11	INVITE_PEOPLE		user can invite people to join board
+12	UPDATE_BOARD		user can update board information
+13	DELETE_BOARD		user can delete board
+14	GIVE_PERMISSION		user can give other people permissions
+15	VIEW_MEM_PER		user can view other people permissions
+
+DEFAULT ROLE
+	BOARD_TYPE_ID
+	ROLE_ID

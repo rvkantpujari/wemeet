@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from globaltables.models import BoardType, Role
+from globaltables.models import BoardType, Role, AccessRights
 
 
 class Board(models.Model):
@@ -14,7 +14,7 @@ class Board(models.Model):
 		on_delete=models.CASCADE)
 	isDeleted = models.BooleanField(default=0)
 	token = models.CharField(max_length=6, default='')
-
+	
 	def __str__(self):
 		return self.boardTitle
 
@@ -30,13 +30,11 @@ class BoardMembers(models.Model):
 	boardId = models.ManyToManyField(Board)
 	user = models.ManyToManyField(User)
 	addedOn = models.DateTimeField()
-	roleId = models.ForeignKey(Role, on_delete=models.PROTECT)
+	roleId = models.ManyToManyField(Role)
 	statusId = models.ForeignKey(BoardMemberStatus, on_delete=models.PROTECT)
-
 
 	def __str__(self):
 		return str(self.boardId) + " " + str(self.user)
-
 
 
 class Poll(models.Model):
@@ -76,5 +74,7 @@ class BoardInvitation(models.Model):
 	responseTime = models.DateTimeField(null=True)
 
 
-
+class BoardMembersAccessRights(models.Model):
+	boardMember = models.ForeignKey(BoardMembers, on_delete=models.CASCADE)
+	accessRight = models.ManyToManyField(AccessRights)
 

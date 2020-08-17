@@ -4,6 +4,9 @@
 {% block topbar %} {% endblock %}
 {% block content %}
 {% load boardTags %}
+{% load accessTags %}
+{% with board|getUsersAccessRights:user as hasRight %}
+
 <style>
     .test:after {
         content: '\2807';
@@ -19,7 +22,8 @@
                 <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;">
                     <!-- Default panel contents -->
                     <div class="panel-heading text-left" style="background-color: #86bc42;">
-                        <h4>{{ board.boardTitle }}</h4>
+                        <span class="h4" style="font-weight: 800">{{ board.boardTitle }}</span>
+                        <span class="layout-right" style="font-weight: 500">Code: {{ board.token }}</span>
                     </div>
                     <div class="panel-body text-justify">
                         <br>
@@ -44,12 +48,13 @@
             </div>
             <!-- Tab panes-->
             <div class="tab-content courses-content">
+                <!-- posts panel -->
                 <div id="posts" role="tabpanel" class="tab-pane fade in active">
                     <div class="style-show style-grid row">
                         <div class="col-sm-12">
                             <div class="news-detail">
                                 <div class="news-comment">
-                                    {% if isOwner %}
+                                    {% if hasRight.CREATE_POST %}
                                     <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;">
                                         <!-- Default panel contents -->
                                         <div class="panel-heading text-left">
@@ -59,15 +64,16 @@
                                             <br>
                                             <div style="font-size: 1.3rem">
                                                 <div class="col-md-12">
-                                                    <form action="" method="POST">
-                                                        <input type="text" name="" id="id_postTitle" placeholder="Enter The Post Title" class="form-control form-input" required>
+                                                    <form action="{% url 'create_post' boardId=board.boardId %}" method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <input type="text" name="postTitle" id="id_postTitle" placeholder="Enter The Post Title" class="form-control form-input" required>
                                                         <br>
-                                                        <textarea name="" id="postForm" cols="3" class="form-control" style="resize: vertical; height: 100px;" placeholder="Enter Post Description" cols="5" required></textarea>
+                                                        <textarea name="postDescription" id="postForm" cols="3" class="form-control" style="resize: vertical; height: 100px;" placeholder="Enter Post Description" cols="5" required></textarea>
                                                         <br>
                                                         <span id="attachedFilesList" class="row"></span>
                                                         <br>
                                                         <button type="submit" class="btn btn-login btn-green" id="postBtn"><span>Post</span></button>
-                                                        <input type="file" name="file" id="fileUpload" multiple onchange="previewFiles(event);">
+                                                        <input type="file" name="postAttachment" id="fileUpload"  onchange="previewFiles(event);">
                                                         &nbsp;&nbsp;
                                                         <button type="button" class="btn btn-login btn-green" onclick='$("#fileUpload").click()'>
                                                             <span class="fa fa-paperclip fa-lg"> Add</span>
@@ -82,6 +88,8 @@
                                     <br><br>
                                     <h1 class="news-comment-title">Posts</h1>
                                     <br><br>
+                                    {% if hasRight.VIEW_POST %}
+                                    {% for post in posts %}
                                     <ul class="comment-list list-unstyled">
                                         <li class="media">
                                             <div class="list-item">
@@ -89,7 +97,7 @@
                                                 <div class="media-body">
                                                     <div class="pull-left">
                                                         <div class="info">
-                                                            <div class="reader item"><a href="#">Charlotte</a></div>
+                                                            <div class="reader item"><a href="#">{{post.postTitle}}</a></div>
                                                         </div>
                                                     </div>
                                                     <div class="pull-right">
@@ -97,124 +105,71 @@
                                                             <div class="test dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             </div>
                                                             <ul class="dropdown-menu dropdown-menu-right">
-                                                                <li><a href="#" class="link-page">Edit</a></li>
-                                                                <li><a href="#" class="link-page">Delete</a></li>
+                                                                <li><a href="{% url 'edit_post' postId=post.postId %}" class="link-page">Edit</a></li>
+                                                                <li><a href="{% url 'delete_post' postId=post.postId %}" class="link-page">Delete</a></li>
                                                             </ul>
                                                         </div>
                                                     </div>
                                                     <div class="clearfix"></div>
-                                                    <div class="time" style="margin-top: 10px;">March 23, 2017 at 7:59 pm</div>
-                                                    <div class="des" style="margin-top: 10px;"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit Nam viverra euismod odio, gravida pellentesque urna varius vitae.</p></div>
+                                                    <div class="time" style="margin-top: 10px;">{{post.createdOn}}</div>
+                                                    <div class="des" style="margin-top: 10px;"><p>{{post.postDescription}}</p></div>
                                                     <div class="pull-right">
-                                                        <button type="submit" class="btn btn-login btn-green"><span>View Post</span></button>
+                                                       <a href="{% url 'view_post' postId=post.postId %}"> <button type="submit" class="btn btn-login btn-green"><span>View Post</span></button></a>
                                                     </div>
                                                 </div>
                                             </div>
                                         </li>
                                     </ul>
+                                    {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <!-- poll panel -->
                 <div id="poll" role="tabpanel" class="tab-pane fade">
-                    {% if user == board.createdBy %}    
-                        <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;margin-bottom: 100px;">
-                            <!-- Default panel contents -->
-                            <div class="panel-heading text-left">
-                                <h4>Create Poll</h4>
-                            </div>
-                            <div class="panel-body text-justify">
-                                <br>
-                                <div style="font-size: 1.3rem">
-                                    <div class="col-md-1"></div>
-                                    <div class="col-md-10">
-                                        <form action="{% url 'create_poll' boardId=board.boardId %}" method="POST">
-                                            {% csrf_token %}
-                                            <label for="question" class="control-label form-label">Question: <span class="highlight">*</span></label>
-                                            <input type="text" class="form-control control-input" name="pollQuestion" required><br>
-                                            <label for="deadline" class="control-label form-label">Deadline: <span class="highlight">*</span></label>
-                                            <input type="date" name="deadlineDate" class="form-control control-input" required>
-                                            <input type="time" name="deadlineTime" class="form-control control-input" required><br>
-                                            <label for="totalChoices" class="control-label form-label">Number of Choices: (Maximum 10) <span class="highlight">*</span></label>
-                                            <input type="number" id="choice" class="form-control control-input" name="choice" value="2" max=10 min=2 required><br />
-                                            <div id="container"></div>
-                                            <br>
-                                            <a id="filldetails" class="btn btn-login btn-green" onclick="addFields()"><span>Add Choices</span></a>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                            <button type="submit" name="submit" class="btn btn-login btn-green"><span>Create Poll</span></button>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-1"></div>
-                                </div>
-                                <br>
-                            </div>
+                    {% if hasRight.CREATE_POLL %}  
+                    <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;margin-bottom: 100px;">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading text-left">
+                            <h4>Create Poll</h4>
                         </div>
-
-                        {% if polls %}
-                        <br><br>
-                        <h1 class="news-comment-title">Polls</h1>
-                        <br><br>
-                        {% endif %}
-                        {% for poll in polls %}
-                            <div class="row" style="margin-top: 20px;">
+                        <div class="panel-body text-justify">
+                            <br>
+                            <div style="font-size: 1.3rem">
                                 <div class="col-md-1"></div>
-                                <div class="panel panel-default col-md-10 hvr hvr-float" style="border: solid 1px #86bc42; margin-left: 5px;">
-                                    <!-- Default panel contents -->
-                                    <div class="panel-heading">
-                                        <h3>{{ poll.pollQuestion }}</h3>
-                                        {% now "Y-m-d H:i:s.u" as todays_date %}
-                                        {% if poll.isActive %}
-                                            <h4 style="color: green;">Active</h4>
-                                        {% else %}
-                                            <h4 style="color: red;">Closed</h4>
-                                        {% endif %}
-                                    </div>
-                                    <div class="panel-body">
-                                        <div class="course-table col-md-12">
-                                            <div class="table-header">
-                                                <table class="edu-table-responsive">
-                                                    <thead>
-                                                    <tr class="heading-table">
-                                                        <th class="col-3 h3">Choice</th>
-                                                        <th class="col-3 h3">Votes</th>
-                                                    </tr>
-                                                    </thead>
-                                                </table>
-                                            </div>
-                                            <div class="table-body">
-                                                <table class="edu-table-responsive table-hover">
-                                                    <tbody>
-                                                    {% for choice in poll.choices_set.all %}
-                                                    <tr class="table-row" style="text-transform:capitalize;">
-                                                        <td class="left col-3">
-                                                            <span class="h4">
-                                                                {{ choice.choice }}
-                                                            </span>
-                                                        </td>
-                                                        <td class="col-3">
-                                                            <span class="h4">
-                                                                {{ choice.count }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-md-10">
+                                    <form action="{% url 'create_poll' boardId=board.boardId %}" method="POST">
+                                        {% csrf_token %}
+                                        <label for="question" class="control-label form-label">Question: <span class="highlight">*</span></label>
+                                        <input type="text" class="form-control control-input" name="pollQuestion" required><br>
+                                        <label for="deadline" class="control-label form-label">Deadline: <span class="highlight">*</span></label>
+                                        <input type="date" name="deadlineDate" class="form-control control-input" required>
+                                        <input type="time" name="deadlineTime" class="form-control control-input" required><br>
+                                        <label for="totalChoices" class="control-label form-label">Number of Choices: (Maximum 10) <span class="highlight">*</span></label>
+                                        <input type="number" id="choice" class="form-control control-input" name="choice" value="2" max=10 min=2 required><br />
+                                        <div id="container"></div>
+                                        <br>
+                                        <a id="filldetails" class="btn btn-login btn-green" onclick="addFields()"><span>Add Choices</span></a>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <button type="submit" name="submit" class="btn btn-login btn-green"><span>Create Poll</span></button>
+                                    </form>
                                 </div>
                                 <div class="col-md-1"></div>
                             </div>
-                        {% endfor %}
-
-                    {% else %}
-                        {% if polls %}
-                        <h1 class="news-comment-title">Polls</h1>
-                        <br><br>
-                        {% endif %}
+                            <br>
+                        </div>
+                    </div>
+                    {% endif %}
+                
+                    {% if polls %}
+                    <h1 class="news-comment-title">Polls</h1>
+                    <br><br>
+                    {% endif %}
+                    {% with hasRight.GIVE_VOTE as give_vote %}
+                    {% with hasRight.VIEW_POLL_RESULT as view_poll_result %}
+                    
                         {% for poll in polls %}
                         <div class="row" style="margin-top: 20px;">
                             <div class="col-md-1"></div>
@@ -231,6 +186,7 @@
                                 </div>
                                 <div class="panel-body">
                                     {% if poll.isActive %}
+                                        {% if give_vote %}
                                         <form>
                                             {% csrf_token %}
                                             <ul class="list-group">
@@ -243,7 +199,9 @@
                                                 </li>
                                             </ul>
                                         </form>
+                                        {% endif %}
                                     {% else %}
+                                        {% if hasRight.VIEW_POLL_RESULT %}
                                         <ul class="list-group">
                                         {% for choice in poll.choices_set.all %}
                                             <h4>
@@ -253,15 +211,19 @@
                                             </h4>
                                         {% endfor %}
                                         </ul>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-1"></div>
                         </div>
                         {% endfor %}
-                    {% endif %}
+                    
+                    {% endwith %}
+                    {% endwith %}
+                    
                 </div>
-                
+                <!-- people panel -->
                 <div id="people" role="tabpanel" class="tab-pane fade">
                     <div class="row" style="font-size: 1.8rem; margin-top: 10px; margin-bottom: 100px;">
                         <div class="col-md-1"></div>
@@ -269,7 +231,7 @@
                             <div class="course-syllabus">
                                 <div>
                                     <span class="course-syllabus-title underline layout-left">Members</span>
-                                    {% if isOwner %}
+                                    {% if hasRight.INVITE_PEOPLE %}
                                         <button type="button" class="btn btn-login btn-green layout-right" data-toggle="modal" data-target="#invitePeopleModal">
                                             <span>
                                                 Add Member
@@ -284,8 +246,7 @@
                                             <table class="edu-table-responsive">
                                                 <thead>
                                                 <tr class="heading-table">
-                                                    <th class="col-4">First Name</th>
-                                                    <th class="col-4">Last Name</th>
+                                                    <th class="col-4">Full Name</th>
                                                     <th class="col-4">Role</th>
                                                 </tr>
                                                 </thead>
@@ -296,20 +257,21 @@
                                                 <tbody>
                                                 {% for member in members %}
                                                 <tr class="table-row" style="text-transform:capitalize;">
-                                                    <td class="left col-4">
+                                                    <td  title="Manage {{ member.user.first.first_name }}'s Acceess Rights" class="left col-4">
+                                                        {% if hasRight.VIEW_MEM_PER %}
+                                                        <a href="{% url 'people_board_details' boardMemberId=member.id %}">{% endif %}
                                                         <span>
                                                             {{ member.user.first.first_name }} 
                                                         </span>
-                                                    </td>
-                                                    <td class="col-4">
                                                         <span>
                                                             {{ member.user.first.last_name }}
                                                         </span>
+                                                        {% if hasRight.VIEW_MEM_PER %}</a>{% endif %}
                                                     </td>
                                                     <td class="col-4">
-                                                        <span>
-                                                            {{ board|memberRole:member.user.first }}
-                                                        </span>
+                                                        {% for role in member.roleId.all %}
+                                                             <span>{{ role.role }}</span>
+                                                        {% endfor %}
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -340,7 +302,7 @@
     </div>
 </div>
 <!-- Invite People Code -->
-{% if isOwner %}
+{% if hasRight.INVITE_PEOPLE %}
     <div class="modal fade" id="invitePeopleModal" role="dialog">
         <div class="modal-dialog">
           <!-- Modal content-->
@@ -404,7 +366,7 @@
     </script>
 {% endif %}
 <!-- create post's script code -->
-{% if isOwner %}
+{% if hasRight.CREATE_POST %}
 <script>
     // Post and File Attachment Script
     let attachedFilesList = document.getElementById('attachedFilesList');
@@ -508,7 +470,7 @@
 {% endif %}
 
 <script type='text/javascript'>
-        $('.choice').click(function()
+    $('.choice').click(function()
     {
         var choice;
         choice = $(this).val();
@@ -527,4 +489,5 @@
          })
     });
 </script>
+{% endwith %}
 {% endblock content %}

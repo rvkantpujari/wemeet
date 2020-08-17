@@ -25,6 +25,7 @@ urlpatterns = [
     path('', boardViews.Home.as_view(), name='home'),
     path('account/', include('account.urls')),
     path('board/', include('board.urls')),
+    path('post/', include('post.urls')),
 ]
 
 
