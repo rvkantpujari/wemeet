@@ -15,4 +15,5 @@ urlpatterns = [
 	path('people_board_details/<int:boardMemberId>', views.PeopleBoardDetails.as_view(), name='people_board_details'),
 	path('access_right/revoke/', views.RevokeAccessRight.as_view(), name='revoke_right'),
 	path('access_right/grant/', views.GrantAccessRight.as_view(), name='grant_right'),
+	path('edit_board/', views.EditBoard.as_view(), name='edit_board'),
 ]

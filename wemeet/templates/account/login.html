@@ -14,6 +14,9 @@
     .error {
         color: red;
     }
+    .form-links {
+        line-height: 2;
+    }
 </style>
 <!-- WRAPPER-->
 <div class="content">
@@ -40,8 +43,8 @@
                                     {% endfor %}
                                 </div>
                             </table>
-                            <br>
-                            <a href="{% url 'register' %}">Don't have an account?</a>
+                            <a class="form-links" href="#">Forgot Password?</a><br>
+                            <a class="form-links" href="{% url 'register' %}">Don't have an account?</a>
                         </div>
                         <div class="login-submit">
                             <button type="submit" class="btn btn-login btn-green"><span>sign in</span></button>

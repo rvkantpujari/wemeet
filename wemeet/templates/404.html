@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} 404 Page not Found {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+
+<div id="wrapper-content"><!-- PAGE WRAPPER-->
+    <div id="page-wrapper"><!-- MAIN CONTENT-->
+        <div class="main-content"><!-- CONTENT-->
+            <div class="content">
+                <div class="page-404">
+                    <div class="container">
+                        <div class="wrapper-404">
+                            <div class="title-404"><p class="signal">Oops, This Page Could Not Be Found!</p><span class="sub">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</span>
+
+                                <p class="warning">404</p>
+                                <a href ="{% url 'home'  %}" class="btn btn-login btn-green"><span>HOME</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- BUTTON BACK TO TOP-->
+    <div id="back-top"><a href="#top"><i class="fa fa-angle-double-up"></i></a></div>
+</div>
+
+{% endblock content %}

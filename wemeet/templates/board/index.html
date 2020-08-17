@@ -42,7 +42,7 @@
                                         </div>
                                         <br>
                                         <div class="tag-item">
-                                            Type: {{ board.boardType }}
+                                            <span class="label label-default">{{ board.boardType }}</span>
                                         </div>
                                         <hr>
                                         <div style="font-size: 1.3rem;" class="board-desc">
@@ -92,7 +92,7 @@
                                             &nbsp; {{ board|totalBoardMembers }} &nbsp; | &nbsp; {{ board.createdOn|date:'d-m-Y' }}  
                                         </div>
                                         <div class="panel-body">
-                                            Type: {{ board.boardType }}
+                                            <span class="label label-default">{{ board.boardType }}</span>
                                             <br>
                                             Role: {{ board|memberRole:user }} 
                                         </div>

@@ -26,6 +26,15 @@ SECRET_KEY = '%y688!y#ams99_33(d_msn2n(%s=%^)*-!!jjwui*a+2#=f!__'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+"""if DEBUG is False:
+    ALLOWED_HOSTS = [
+        '127.0.0.1:8000',
+        '*',
+    ]
+
+if DEBUG is True:
+    ALLOWED_HOSTS = []"""
+
 ALLOWED_HOSTS = []
 
 
@@ -41,6 +50,7 @@ INSTALLED_APPS = [
     'globaltables',
     'account',
     'board',
+    'post',
 ]
 
 MIDDLEWARE = [
