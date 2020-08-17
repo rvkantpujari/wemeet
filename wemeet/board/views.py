@@ -409,5 +409,3 @@ class GrantAccessRight(View):
 			return HttpResponse('success')
 		return HttpResponse('success')
 
-
-

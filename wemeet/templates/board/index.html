@@ -28,26 +28,27 @@
 
                         {% if boardsCreated %}
                             {% for board in boardsCreated %}
-                                <div class="panel panel-default col-md-4 hvr-float" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
-                                      <!-- Default panel contents -->
-                                      <div class="panel-heading">
+                                <div class="panel panel-default col-md-4 hvr-float" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem; height: 320px;">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading" style="text-transform: capitalize;">
                                         <a href="{% url 'board_details' boardId=board.boardId %}">
-                                        <h3>{{ board.boardTitle }}</h3>
+                                            <h3>{{ board.boardTitle }}</h3>
                                         </a>
-                                      </div>
-                                          <div class="panel-body">
-                                            <div>
-                                                <i class="fa fa-user"></i>
-                                                     &nbsp; {{ board|totalBoardMembers }} &nbsp; | &nbsp; {{ board.createdOn|date:'d-m-Y' }}  
-                                            </div>
-                                            <br>
-                                            <div class="tag-item">
-                                                Type: {{ board.boardType }}
-                                            </div>
-                                            <div style="font-size: 1.3rem">
-                                                <h4>{{ board.boardDescription }}</h4>
-                                            </div>
-                                          </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div>
+                                            <i class="fa fa-user"></i>
+                                                    &nbsp; {{ board|totalBoardMembers }} &nbsp; | &nbsp; {{ board.createdOn|date:'d-m-Y' }}  
+                                        </div>
+                                        <br>
+                                        <div class="tag-item">
+                                            Type: {{ board.boardType }}
+                                        </div>
+                                        <hr>
+                                        <div style="font-size: 1.3rem;" class="board-desc">
+                                            <h4 style="line-height: 1.5;">{{ board.boardDescription }}</h4>
+                                        </div>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -76,28 +77,30 @@
 
                         {% if boardsJoined %}
                             {% for board in boardsJoined %}
+
                                 <!-- <div class="col-md-1"></div> -->
-                                <div class="panel panel-default col-md-4 hvr-float" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
-                                      <!-- Default panel contents -->
-                                      <div class="panel-heading">
+                                <div class="panel panel-default col-md-4 hvr-float" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem; height: 340px;">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading" style="text-transform: capitalize;">
                                         <a href="{% url 'board_details' boardId=board.boardId %}">
                                         <h3>{{ board.boardTitle }}</h3>
                                         </a>
                                     </div>
-                                          <div class="panel-body">
-                                            <div>
-                                                <i class="fa fa-user"></i>
-                                                     &nbsp; {{ board|totalBoardMembers }} &nbsp; | &nbsp; {{ board.createdOn|date:'d-m-Y' }}  
-                                            </div>
-                                            <div class="panel-body">
-                                                Type: {{ board.boardType }} | 
-                                                Role: {{ board|memberRole:user }} 
-                                            </div>
+                                    <div class="panel-body">
+                                        <div>
+                                            <i class="fa fa-user"></i>
+                                            &nbsp; {{ board|totalBoardMembers }} &nbsp; | &nbsp; {{ board.createdOn|date:'d-m-Y' }}  
+                                        </div>
+                                        <div class="panel-body">
+                                            Type: {{ board.boardType }}
                                             <br>
-                                            <div style="font-size: 1.3rem">
-                                                <h4>{{ board.boardDescription }}</h4>
-                                            </div>
-                                          </div>
+                                            Role: {{ board|memberRole:user }} 
+                                        </div>
+                                        <hr>
+                                        <div style="font-size: 1.3rem" class="board-desc">
+                                            <h4 style="line-height: 1.5;">{{ board.boardDescription }}</h4>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                             {% endfor %}
@@ -127,7 +130,7 @@
                             <div class="panel panel-default col-md-4" style="border: solid 1px #86bc42; margin-left: 5px; max-width: 35rem;">
                                       <!-- Default panel contents -->
                                 <div class="panel-heading">
-                                <h4><i>{{ invitation.board.createdBy.first_name }} {{ invitation.board.createdBy.last_name }}</i> has invited you to join board <i>{{ invitation.board.boardTitle }}</i> As <i>{{ invitation.role }}</i>
+                                <h4 style="line-height: 1.5;"><i>{{ invitation.board.createdBy.first_name }} {{ invitation.board.createdBy.last_name }}</i> has invited you to join board <i style="color: red;">{{ invitation.board.boardTitle }}</i> As <i>{{ invitation.role }}</i>
                                 </h4>
                                 </div>
                                 <div class="panel-body">
@@ -148,11 +151,10 @@
                                     <div class="edugate-layout-2-wrapper">
                                         <div class="edugate-content">
                                             <br><br>
-                                            <h3 class="title">Such an empty!!</h3>
+                                            <h3 class="title">No New Invitations!!</h3>
                                             <br>
-                                            <div class="description text-justify">
-                                                
-                                            <h3>You will see invitations here when someone invites you.</h3>
+                                            <div class="description text-justify" style="max-width: 35rem;">
+                                                <h3>You will see invitations here when someone invites you.</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -167,6 +169,20 @@
     </div>
 </div>
 <script>
+    // Limit Board Description
+    function truncateText(element, maxLength) {
+        let truncated = element.innerText;
+        if (truncated.length > maxLength) {
+            truncated = truncated.substr(0, maxLength) + '...';
+        }
+        //return truncated;
+        element.innerText = truncated;
+    }
+    let countBDesc = document.querySelectorAll('.board-desc h4');
+    for(let i=0; i<countBDesc.length; i++)
+    {
+        truncateText(countBDesc[i], 90);
+    }
     // $('#acceptInvitationBtn').click(function()
     function acceptInvitation(_this)
     {
@@ -181,7 +197,9 @@
             },
             success: function( data ) 
             {
-                alert("Accepted successfully");
+                //alert("Accepted successfully");
+                swal("You've accepted the invitation",'Invitation Accepted!','success');
+                setTimeout(function() {location.reload();}, 2500);
             }
          })
     };
@@ -199,7 +217,9 @@
             },
             success: function( data ) 
             {
-                alert("Rejected successfully");
+                //alert("Rejected successfully");
+                swal("You've rejected the invitation","Invitation Rejected!",'warning');
+                setTimeout(function() {location.reload();}, 2500);
             }
          })
     };

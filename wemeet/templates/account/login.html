@@ -10,18 +10,23 @@
 {% block navbar %}{% endblock navbar %}
 
 {% block content %}
+<style>
+    .error {
+        color: red;
+    }
+</style>
 <!-- WRAPPER-->
 <div class="content">
     <div class="page-login rlp">
         <div class="container">
             <div class="login-wrapper rlp-wrapper">
                 <div class="login-table rlp-table">
-                    <img src="{% static 'assets/images/logo.png' %}" alt="Logo" style="width: 120px; height: 120px; margin-bottom: -20px;" class="login"/>
+                    <img src="{% static 'assets/images/logo.png' %}" alt="Logo" style="width: 120px; height: 120px; margin-bottom: -20px;" class="login hvr hvr-float"/>
                     <div class="login-title rlp-title">login</div>
                     {% if message %}
                         <h4 class="text-danger"> {{ message }} </h4>
                     {% endif %}
-                    <form method="POST">
+                    <form method="POST" id="loginForm">
                         {% csrf_token %}
                         <div class="login-form bg-w-form rlp-form">
                             <table>
@@ -47,6 +52,38 @@
         </div>
     </div>
 </div>
+<script src="{% static 'assets/libs/validation/jquery.validate.js' %}"></script>
+<script>
+
+$().ready(function() {
+    // validate form on keyup
+    $("#loginForm").validate({
+        rules: {
+            email: {
+                required: true,
+                email: true,
+                normalizer: function( value ) 
+                {
+                    return $.trim( value );
+                }
+            },
+            password: {
+                required: true,
+                minlength: 8
+            },
+        },
+        messages: {
+            email: {
+                required: "Invalid email address",
+            },
+            password: {
+                required: "Please provide a password",
+                minlength: "Your password must be at least 8 characters long"
+            },
+        }
+    });
+});
+</script>
 {% endblock content %}
 {% block go_to_top %}{% endblock go_to_top %}
 {% block footer %}{% endblock footer %}

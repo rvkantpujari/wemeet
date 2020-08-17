@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Homepage | {{block.super}} {% endblock %}
+{% block title %} Board Details | {{block.super}} {% endblock %}
 {% block topbar %} {% endblock %}
 {% block content %}
 {% load boardTags %}
@@ -27,8 +27,8 @@
                     </div>
                     <div class="panel-body text-justify">
                         <br>
-                        <div style="font-size: 1.3rem">
-                            <h4>{{ board.boardDescription }}</h4>
+                        <div style="font-size: 1.3rem;">
+                            <h4 style="line-height: 1.4;">{{ board.boardDescription }}</h4>
                         </div>
                         <br>
                     </div>
@@ -47,7 +47,7 @@
                 <div class="col-md-4"></div>
             </div>
             <!-- Tab panes-->
-            <div class="tab-content courses-content">
+            <div class="tab-content courses-content" style="margin-bottom: 80px;">
                 <!-- posts panel -->
                 <div id="posts" role="tabpanel" class="tab-pane fade in active">
                     <div class="style-show style-grid row">
@@ -73,7 +73,7 @@
                                                         <span id="attachedFilesList" class="row"></span>
                                                         <br>
                                                         <button type="submit" class="btn btn-login btn-green" id="postBtn"><span>Post</span></button>
-                                                        <input type="file" name="file" id="fileUpload" multiple onchange="previewFiles(event);">
+                                                        <input type="file" name="file" id="fileUpload" onchange="previewFiles(event);">
                                                         &nbsp;&nbsp;
                                                         <button type="button" class="btn btn-login btn-green" onclick='$("#fileUpload").click()'>
                                                             <span class="fa fa-paperclip fa-lg"> Add</span>
@@ -143,8 +143,8 @@
                                         <label for="question" class="control-label form-label">Question: <span class="highlight">*</span></label>
                                         <input type="text" class="form-control control-input" name="pollQuestion" required><br>
                                         <label for="deadline" class="control-label form-label">Deadline: <span class="highlight">*</span></label>
-                                        <input type="date" name="deadlineDate" class="form-control control-input" required>
-                                        <input type="time" name="deadlineTime" class="form-control control-input" required><br>
+                                        <input type="date" name="deadlineDate" id="deadlineDate" class="form-control control-input" required>
+                                        <input type="time" name="deadlineTime" id="deadlineTime" class="form-control control-input" required><br>
                                         <label for="totalChoices" class="control-label form-label">Number of Choices: (Maximum 10) <span class="highlight">*</span></label>
                                         <input type="number" id="choice" class="form-control control-input" name="choice" value="2" max=10 min=2 required><br />
                                         <div id="container"></div>
@@ -341,7 +341,6 @@
             var email = document.querySelector('#invitePeopleForm #email');
             var role = document.querySelector('#invitePeopleForm #role');
             boardId = "{{ board.boardId }}";
-            console.log(email);
             $.ajax(
             {
                 headers: { "X-CSRFToken": token },
@@ -468,6 +467,35 @@
 {% endif %}
 
 <script type='text/javascript'>
+    
+    // Poll Deadline Date Validation
+
+    let dateField = document.getElementById('deadlineDate');
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    let minDate = yyyy + '-' + mm + '-' + dd;
+    dateField.setAttribute('min', minDate);
+    //console.log(maxDate)
+    
+    // Poll Deadline Time Validation
+    var currentTime = new Date()
+    var hrs = currentTime.getHours()
+    var min = currentTime.getMinutes()+5;
+    if (min < 10){
+        min = "0" + min;
+    }
+    if (hrs < 10){
+        hrs = "0" + hrs;
+    }
+    let minTime = hrs + ':' + min;
+    let deadlineTime = document.getElementById('deadlineTime');
+    //console.log(deadlineTime);
+    deadlineTime.setAttribute('min', minTime);
+
+    // Poll Choice Selection
+    
     $('.choice').click(function()
     {
         var choice;
