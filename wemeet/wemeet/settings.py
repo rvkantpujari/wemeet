@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'globaltables',
     'account',
     'board',
+    'post',
 ]
 
 MIDDLEWARE = [

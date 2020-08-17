@@ -6,8 +6,8 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Board as BoardModel, BoardMembers, BoardMemberStatus
-from .models import Poll, Choices, MemberPollChoice, BoardInvitation,\
-	BoardMembersAccessRights
+from .models import Poll, Choices, MemberPollChoice, BoardInvitation,BoardMembersAccessRights
+from post.models import Post 
 from globaltables.models import BoardType, Role, DefaultRole, AccessRights
 from django.db.models import Q
 from datetime import datetime, date, time
@@ -165,10 +165,11 @@ class BoardDetails(View):
 
 		polls = Poll.objects.filter(boardId = board)
 		roles = Role.objects.filter(boardTypeId = board.boardType)
+		posts = Post.objects.filter(boardId = board)
 		
 		return render(request, 'board/boardDetails.html',
 			{'board':board, 'members':members, 'user': curr_user,'polls':polls,
-			'isOwner': isOwner, 'roles': roles})
+			'isOwner': isOwner,'posts':posts, 'roles': roles})
 
 
 @method_decorator(login_required, name='dispatch')
