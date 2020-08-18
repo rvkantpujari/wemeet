@@ -14,6 +14,7 @@
     <link type="text/css" rel="stylesheet" href="{% static 'assets/font/font-icon/font-svg/css/Glyphter.css' %}">
     <!-- LIBRARY CSS-->
     <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/animate/animate.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/hover/hover-min.css' %}">
     <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/bootstrap-3.3.5/css/bootstrap.css' %}">
     <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/owl-carousel-2.0/assets/owl.carousel.css' %}">
     <link type="text/css" rel="stylesheet" href="{% static 'assets/libs/selectbox/css/jquery.selectbox.css' %}">
@@ -45,10 +46,10 @@
         </div>
     </div>
     {% block go_to_top %}
-        <!-- BUTTON BACK TO TOP-->
+        <!-- BUTTON BACK TO TOP--
         <div id="back-top">
             <a href="#top"><i class="fa fa-angle-double-up"></i></a>
-        </div>
+        </div>-->
     {% endblock go_to_top %}
 </div>
 {% block footer %}
@@ -75,5 +76,6 @@
 <script src="{% static 'assets/libs/isotope/isotope.pkgd.min.js' %}"></script>
 <script src="{% static 'assets/libs/isotope/fit-columns.js' %}"></script>
 <script src="{% static 'assets/js/pages/homepage.js' %}"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Homepage | {{block.super}} {% endblock %}
+{% block title %} Manage Permissions | {{block.super}} {% endblock %}
 {% block topbar %} {% endblock %}
 {% block content %}
 {% load accessTags %}
@@ -8,30 +8,81 @@
 {% with boardMember|currentAccesses as currentAccesses %}
 {% with board|getUsersAccessRights:user as hasRight %}
 
-<h4> board: {{ boardMember.boardId.first.boardTitle }}
-<h4> People: {{ boardMember.user.first.first_name }}
-<h4> Role: 
-	{% for role in  boardMember.roleId.all %}
-         <span>{{ role.role }}</span>
-    {% endfor %}
-<br><br>
-<h2>Permissions: </h2>
-{% if hasRight.GIVE_PERMISSION %}
-	{% for right in accessRights %}
-		<h4><input type="checkbox" name="accessRight" value="{{ right.id }}"
-			class="access_right_class"
-		{% if currentAccesses|hasAccess:right %} checked {% endif %}>
-		 {{ right }} </h4>
-	{% endfor %}
-{% else %}
-	{% for right in accessRights %}
-		{% if currentAccesses|hasAccess:right %}
-			<h4> {{ right }} </h4>
-		{% endif %}
-	{% endfor %}
-{% endif %}
-{% endwith %}
-{% endwith %}
+
+<div class="section section-padding profile-teacher">
+	<div class="container">
+		<div class="profile-teacher-wrapper">
+			<div class="teacher-info">
+					<div class="teacher-des">
+						<div class="title">
+							{{ boardMember.user.first.first_name }} 
+							{{ boardMember.user.first.last_name }}
+						</div>
+						<h4 style="color: #86BC42;">
+							<a href="{% url 'board_details' boardId=boardMember.boardId.first.boardId %}">
+							{{ boardMember.boardId.first.boardTitle }}
+							</a>
+						</h4>
+						<div class="subtitle">
+							{% for role in  boardMember.roleId.all %}
+								<span>{{ role.role }}</span>
+							{% endfor %}
+						</div>
+					</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-1"></div>
+			<div class="col-sm-10">
+				<div class="certificate-title underline" style="margin-top: -50px;">
+					Permissions
+				</div>
+				<div class="course-table" style="margin-bottom: 50px;">
+					<div class="table-header">
+							<table class="edu-table-responsive">
+									<thead>
+									<tr class="heading-table">
+											<th class="col-1">Permission</th>
+											<th class="col-4">Status</th>
+									</tr>
+									</thead>
+							</table>
+					</div>
+					<div class="table-body">
+							<table class="edu-table-responsive table-hover">
+									<tbody>														
+									{% if hasRight.GIVE_PERMISSION and boardMember.user.first != user and isNotAdmin %}
+										{% for right in accessRights %}
+											<tr class="table-row" style="text-transform:capitalize;">
+													<td class="col-1" style="padding-left: 20px;">
+														<h4> {{ right }} </h4>
+													</td>
+													<td class="col-4">
+														<h4><input type="checkbox" name="accessRight" value="{{ right.id }}"
+															class="access_right_class"
+														{% if currentAccesses|hasAccess:right %} checked {% endif %}></h4>
+													</td>
+											</tr>
+										{% endfor %}
+									{% else %}
+										{% for right in accessRights %}
+											{% if currentAccesses|hasAccess:right %}
+											<h4> {{ right }} </h4>
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+									{% endwith %}
+									{% endwith %}
+									</tbody>
+							</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+	</div>
+</div>
+
 <script>
       $(".access_right_class").change(function()
       {
@@ -53,7 +104,8 @@
 		            },
 		            success: function( data ) 
 		            {
-		                alert("Right Granted");
+						//alert("Right Granted");
+						swal("Permission Granted!!!",'','success');
 		            }
 		         });
         	}
@@ -72,7 +124,8 @@
 		            },
 		            success: function( data ) 
 		            {
-		                alert("Right Revoked");
+						//alert("Right Revoked");
+						swal("Permission Revoked!!!",'','warning');
 		            }
 		         });
         	}

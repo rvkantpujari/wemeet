@@ -186,7 +186,8 @@ class ChangeUserPassowrd(View):
         if fm.is_valid():
             fm.save()
             update_session_auth_hash(request, fm.user)
-            return HttpResponseRedirect('/account/profile/')
+            # return HttpResponseRedirect('/account/profile/')
+            return redirect('home')
         return render(request, 'account/changepassword.html', {'form':fm})
 
 

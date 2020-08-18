@@ -3,11 +3,11 @@ from django.core import validators
 
 
 class SignUpForm(forms.Form):
-    firstName = forms.CharField(min_length=3, max_length=20, widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'John'}))
-    lastName = forms.CharField(min_length=3, max_length=20, label='Last Name: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'Doe'}))
-    email = forms.EmailField(validators=[validators.MaxLengthValidator(50)], label='Email: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
-    password = forms.CharField(min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
-    repassword = forms.CharField(min_length=8, max_length=32, label="Confirm Password", widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+    firstName = forms.CharField(min_length=3, max_length=20, required=False, widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'John'}))
+    lastName = forms.CharField(min_length=3, max_length=20, required=False, label='Last Name: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'Doe'}))
+    email = forms.EmailField(validators=[validators.MaxLengthValidator(50)], required=False, label='Email: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
+    password = forms.CharField(min_length=8, max_length=32, required=False, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+    repassword = forms.CharField(min_length=8, max_length=32, required=False, label="Confirm Password", widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
     
     def clean(self):
         cleaned_data = super(regForm, self).clean()
@@ -18,8 +18,8 @@ class SignUpForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(max_length=50, label='Email: ', widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
-    password = forms.CharField(min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+    email = forms.EmailField(max_length=50, label='Email: ', required=False, widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
+    password = forms.CharField(min_length=8, max_length=32, required=False, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
 
 
 class DateInput(forms.DateInput):
@@ -35,8 +35,6 @@ class profileForm(forms.Form):
 
     firstName = forms.CharField(label='First Name: ',min_length=3, max_length=20, widget=forms.TextInput(attrs={'class': 'form-control form-input', 'placeholder': 'John'}))
 
-    #middleName = forms.CharField(min_length=3, max_length=20, label='Middle Name: ', required=False, widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'Ivy'}))
-
     lastName = forms.CharField(min_length=3, max_length=20, label='Last Name: ', widget=forms.TextInput(attrs={'class': 'form-control form-input col-md-3', 'placeholder': 'Doe'}))
     
     dob = forms.DateField(required=False,label='Date of Birth: ', widget=DateInput(attrs={'class': 'form-control form-input'}))
@@ -46,11 +44,17 @@ class profileForm(forms.Form):
 
     profilePic = forms.ImageField(required=False, label='Upload Profile Picture')
 
+class resetPasswordForm(forms.Form):
+    email = forms.EmailField(max_length=50, label='Email: ', required=False, widget=forms.TextInput(attrs={'class':'form-control form-input', 'placeholder': 'johndoe@gmail.com'}))
+    password = forms.CharField(min_length=8, max_length=32, required=False, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+
 
 class resetPasswordForm(forms.Form):
-    oldPassword = forms.CharField(label='Old Password: ',min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+    oldPassword = forms.CharField(label='Old Password: ', min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+
     newPassword = forms.CharField(label='New Password: ', min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
-    newRePassword = forms.CharField(label='Confirm Password: ', min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
+
+    newRePassword = forms.CharField(label='Confirm Password: ',min_length=8, max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control form-input'}))
     
     def clean(self):
         cleaned_data = super(resetPasswordForm, self).clean()

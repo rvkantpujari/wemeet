@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Post Details | {{block.super}} {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+{% load accessTags %}
+{% with board|getUsersAccessRights:user as hasRight %}
+<style>
+    .test:after {
+        content: '\2807';
+        font-size: 25px;
+    }
+</style>
+
+<div class="section section-padding courses">
+
+    <div class="container">
+        <div class="courses-wrapper">
+            <div class="style-show style-grid row">
+                <div class="panel panel-default col-sm-12" style="border: solid 1px #86bc42; margin-left: 5px;">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading text-left" style="background-color: #86bc42;">
+                        <span class="h3">{{ postobj.postTitle }}</span>
+                        {% if hasRight.UPDATE_POST or hasRight.DELETE_POST %}
+                        <span class="pull-right">
+                          <div class="dropdown" style="cursor:pointer;">
+                            <div class="test dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            </div>
+                            
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                {% if hasRight.UPDATE_POST %}
+                                <li><a href="{% url 'edit_post' postId=postobj.postId %}" class="link-page">Edit</a></li>
+                                {% endif %}
+                                {% if hasRight.DELETE_POST %}
+                                <li><a href="{% url 'delete_post' postId=postobj.postId %}" class="link-page">Delete</a></li>
+                                {% endif %}
+                            </ul>
+                            
+                          </div>
+                        </span>
+                        {% endif %}
+                        <br><br>
+                        <span class="h5">{{ postobj.createdOn }}</span>
+                    </div>
+                    <div class="panel-body text-justify">
+                        <br>
+                        <div style="font-size: 1.3rem">
+                            <h4>Post Description</h4>
+                            <p> {{ postobj.postDescription }} </p>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    {% static postatt.postAttachment %}
+                                </li>
+                            </ul>
+                            <a class="btn btn-login btn-green" href="{% static postatt.postAttachment %}" download>
+                                <span class="fa fa-download">
+                                    Download Attachment
+                                </span>
+                            </a>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            {% if hasRight.POST_COMMENT %}
+            <div style="background-color: rgb(250,250,250); border-radius: 10px; padding: 10px 0px;" class="col-sm-12">
+                <div class="col-sm-1"></div>
+                <form method="POST" action="{% url 'add_comment' postId=postobj.postId %}" id="addcomment" class="col-sm-10">
+                    {% csrf_token %}
+                    <textarea type="text" name="commentdes" id="" class="form-control control-input" placeholder="Add New Comments" style="resize: vertical; height: 120px;"></textarea><br>
+                    <button type="submit" class="btn btn-login btn-green pull-left"><span class="fa fa-paper-plane"></span></button>
+                </form>
+                <div class="col-sm-1"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <br><br>
+  
+    <div class="container" style="margin-bottom: 80px;">
+        <div class="courses-wrapper">
+            <h3>Comments</h3>
+            {% for com in comments %}
+            <div class="style-show style-grid row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8 panel-group accordion" style="margin-top: 20px;">
+                    <div class="panel">
+                        <!--add href=#collapse-1-{{post.postId}}-->
+                        <div class="panel-heading">
+                            <h5 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion-1" href="#collapse-1-{{ forloop.counter }}" aria-expanded="false" class="accordion-toggle collapsed" style="text-align: left;">
+                                    {{com.createdBy.first_name}} {{com.createdBy.last_name}}
+                                    <span class="h6 layout-right" style="padding: 5px 20px 0px 0px;">{{com.createdOn}}</span>
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapse-1-{{forloop.counter}}" aria-expanded="false" style="height: 0px;" class="panel-collapse collapse">
+                            <span class="pull-right" style="padding-right: 25px;">
+                                <div class="dropdown" style="cursor:pointer;">
+                                    <div class="test dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </div>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>
+                                            <!-- add data-commentid="post.postId" -->
+                                            <a href="collapse-1-{{forloop.counter}}" class="link-page edit-comment-link" data-toggle="modal" data-commentid="{{forloop.counter}}">
+                                            Edit</a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'delete_comment' postCommentId=com.postCommentId %}" class="link-page">Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </span>
+                            <div class="panel-body text-justify" style="margin-right: 25px;">
+                                <!-- add id="viewComment{{post.postId}}" -->
+                                <span id="viewComment{{forloop.counter}}">
+                                    {{com.commentDescription}}
+                                </span>
+                                <!-- add id="editCommentForm{{post.postId}}" -->
+                                <form action="{% url 'edit_comment' postCommentId=com.postCommentId %}" method="post" class="col-md-12" id="editCommentForm{{forloop.counter}}">
+                                    {% csrf_token %}
+                                    <br>
+                                    <!--add name and id dynamically as above-->
+                                    <textarea name="commentDescription" id="comment{{forloop.counter}}" class="form-control control-input" placeholder="Edit Comment" style="resize: vertical; height: 150px;">{{com.commentDescription}}</textarea>
+                                    <br>
+                                    <button type="submit" class="btn btn-login btn-green" id="postBtn"><span>Save</span></button>
+                                    <!-- add data-commentid="{{post.postId}}" -->
+                                    <a class="btn btn-login btn-green btn-cancel" data-commentid="{{forloop.counter}}">Cancel</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+</div>
+
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        $('form').hide();
+        $('#addcomment').show();
+    })
+    $(document).on("click", ".edit-comment-link", function () 
+    {
+        let commentId = $(this).data('commentid');
+        $('#viewComment'+commentId).hide();
+        $('#editCommentForm'+commentId).show();
+    });
+
+    $(document).on("click", ".btn-cancel", function () 
+    {
+        let commentId = $(this).data('commentid');
+        $('#viewComment'+commentId).show();
+        $('#editCommentForm'+commentId).hide();
+    });
+
+</script>>
+    
+{% endwith %}
+{% endblock content %}

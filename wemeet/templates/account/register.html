@@ -9,18 +9,23 @@
 {% block navbar %}{% endblock navbar %}
 
 {% block content %}
+<style>
+    .error {
+        color: red;
+    }
+</style>
 <!-- WRAPPER-->
 <div class="content">
     <div class="page-register rlp">
         <div class="container">
             <div class="register-wrapper rlp-wrapper">
                 <div class="register-table rlp-table">
-                    <img src="{% static 'assets/images/logo.png' %}" style="height: 120px; width: 120px; margin-bottom: -20px;" alt="Logo" class="register"/>
+                    <img src="{% static 'assets/images/logo.png' %}" style="height: 120px; width: 120px; margin-bottom: -20px;" alt="Logo" class="register hvr hvr-float"/>
                     <div class="register-title rlp-title">Register</div>
                     {% if message %}
                         <h4  class="text-danger"> {{ message }} </h4>
                     {% endif %}
-                    <form method="POST">
+                    <form method="POST" id="signupForm">
                         {% csrf_token %}
                         <div class="register-form bg-w-form rlp-form">
                             <table>
@@ -45,6 +50,68 @@
         </div>
     </div>
 </div>
+<script src="{% static 'assets/libs/validation/jquery.validate.js' %}"></script>
+<script>
+    $().ready(function() {
+        // validate form on keyup
+        $.validator.addMethod("letters", function(value, element) {
+            return this.optional(element) || value == value.match(/^[a-zA-Z\s]*$/);
+        });
+        $("#signupForm").validate({
+            rules: {
+                firstName: {
+                    required : true,
+                    letters : true,
+                    normalizer: function(value)
+                    {
+                        return $.trim(value);
+                    }
+                },
+                lastName: {
+                    required : true,
+                    letters : true,
+                    normalizer: function(value)
+                    {
+                        return $.trim(value);
+                    }
+                },
+                email: {
+                    required: true,
+                    email: true,
+                    normalizer: function(value)
+                    {
+                        return $.trim(value);
+                    }
+                },
+                password: {
+                    required: true,
+                    minlength: 8
+                },
+                repassword: {
+                    required: true,
+                    minlength: 8,
+                    equalTo: "#id_password"
+                },
+            },
+            messages: {
+                firstName: "Please enter your first name (Numbers not allowed)",
+                lastName: "Please enter your last name (Numbers not allowed)",
+                email: {
+                    required: "Invalid email address",
+                },
+                password: {
+                    required: "Please provide a password",
+                    minlength: "Your password must be at least 8 characters long"
+                },
+                repassword: {
+                    required: "Please provide a password",
+                    minlength: "Your password must be at least 8 characters long",
+                    equalTo: "Please enter the same password as above"
+                },
+            }
+        });
+    });
+</script>
 {% endblock content %}
 {% block go_to_top %}{% endblock go_to_top %}
 {% block footer %}{% endblock footer %}
