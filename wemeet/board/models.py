@@ -19,19 +19,14 @@ class Board(models.Model):
 		return self.boardTitle
 
 
-class BoardMemberStatus(models.Model):
-	statusId = models.AutoField(primary_key=True)
-	status = models.CharField(max_length=20, null=False)
-
-	def __str__(self):
-		return self.status
-
 class BoardMembers(models.Model):
 	boardId = models.ManyToManyField(Board)
 	user = models.ManyToManyField(User)
 	addedOn = models.DateTimeField()
-	roleId = models.ManyToManyField(Role)
-	statusId = models.ForeignKey(BoardMemberStatus, on_delete=models.PROTECT)
+	role = models.ForeignKey(Role, on_delete=models.PROTECT, null=True)
+	isAdmin = models.BooleanField(default=False)
+	isRemoved = models.BooleanField(default=False)
+	isMuted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return str(self.boardId) + " " + str(self.user)

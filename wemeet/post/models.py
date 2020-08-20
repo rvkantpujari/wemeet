@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from globaltables.models import BoardType, Role
-from board.models import Board, BoardMembers,BoardMemberStatus
+from board.models import Board, BoardMembers
 from datetime import datetime
 
 class Post(models.Model):

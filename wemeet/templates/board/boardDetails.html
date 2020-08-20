@@ -40,9 +40,11 @@
                         <div style="font-size: 1.3rem;">
                             <h4 style="line-height: 1.4;">{{ board.boardDescription }}</h4>
                             <hr>
-                            <a href="../edit_board/" class="btn btn-login btn-green pull-right" title="Manage Board" style="border-radius: 10px;">
+                            {% if hasRight.UPDATE_BOARD %}
+                            <a href="{% url 'edit_board' boardId=board.boardId %}" class="btn btn-login btn-green pull-right" title="Manage Board" style="border-radius: 10px;">
                                 <span class="fa fa-cogs fa-lg"></span>
                             </a>
+                            {% endif %}
                         </div>
                         <br>
                     </div>
@@ -114,16 +116,7 @@
                                                             <div class="reader item"><a href="#" style="font-size: 2.5rem;">{{post.postTitle}}</a></div>
                                                         </div>
                                                     </div>
-                                                    <div class="pull-right">
-                                                        <div class="dropdown" style="cursor:pointer;">
-                                                            <div class="test dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                            </div>
-                                                            <ul class="dropdown-menu dropdown-menu-right">
-                                                                <li><a href="{% url 'edit_post' postId=post.postId %}" class="link-page">Edit</a></li>
-                                                                <li><a href="{% url 'delete_post' postId=post.postId %}" class="link-page">Delete</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+                                                    
                                                     <div class="clearfix"></div>
                                                     <div class="time pull-left">
                                                         {{post.createdOn}}
@@ -266,6 +259,7 @@
                                                 <tr class="heading-table">
                                                     <th class="col-4">Full Name</th>
                                                     <th class="col-4">Role</th>
+                                                    <th class="col-4">Status</th>
                                                 </tr>
                                                 </thead>
                                             </table>
@@ -287,10 +281,37 @@
                                                         {% if hasRight.VIEW_MEM_PER %}</a>{% endif %}
                                                     </td>
                                                     <td class="col-4">
-                                                        {% for role in member.roleId.all %}
-                                                             <span>{{ role.role }}</span>
-                                                        {% endfor %}
+                                                             <span>{{ member.role }}</span>
                                                     </td>
+                                                    <td class="col-4">
+                                                    {% if member.isAdmin == False %}
+                                                        {% if member.isRemoved == False %}
+                                                            {% if hasRight.MUTE_MEMBER %}
+                                                            {% if member.isMuted %}
+                                                                <span class="label label-primary">
+                                                                <a  style="color: white"  href="{% url 'unmute_people' boardMemberId=member.id %}" class="link-page">Unmute</a>
+                                                                </span>
+                                                            {% else %}
+                                                                <span  class="label label-default">
+                                                                <a href="{% url 'mute_people' boardMemberId=member.id %}" class="link-page" style="color: white">Mute</a>
+                                                                </span>
+                                                            {% endif %}
+                                                            {% endif %}
+                                                            {% if hasRight.REMOVE_MEMBER %}
+                                                            &nbsp;&nbsp;
+                                                            <span  class="label label-danger">
+                                                            <a  style="color: white" href="{% url 'remove_people' boardMemberId=member.id %}" class="link-page">
+                                                            Remove</a>
+                                                            </span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    
+                                                    {% else %}
+                                                        <span class="link-page  label label-success" style="color: white">
+                                                        Admin
+                                                        </span>
+                                                    </td>
+                                                    {% endif %}
                                                 </tr>
                                                 {% endfor %}
                                                 </tbody>

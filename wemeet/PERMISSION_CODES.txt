@@ -15,8 +15,10 @@ id  accessRightCode		accessRightDescription
 11	INVITE_PEOPLE		user can invite people to join board
 12	UPDATE_BOARD		user can update board information
 13	DELETE_BOARD		user can delete board
-14	GIVE_PERMISSION		user can give other people permissions
+14	CHANGE_PERMISSION	user can give other people permissions
 15	VIEW_MEM_PER		user can view other people permissions
+16	MUTE_MEMBER			user can mute any member(except admin) of board
+17	REMOVE_MEMBER		user can remove any member(except admin) of board
 
 DEFAULT ROLE
 	BOARD_TYPE_ID

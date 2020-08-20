@@ -15,5 +15,9 @@ urlpatterns = [
 	path('people_board_details/<int:boardMemberId>', views.PeopleBoardDetails.as_view(), name='people_board_details'),
 	path('access_right/revoke/', views.RevokeAccessRight.as_view(), name='revoke_right'),
 	path('access_right/grant/', views.GrantAccessRight.as_view(), name='grant_right'),
-	path('edit_board/', views.EditBoard.as_view(), name='edit_board'),
+	path('edit_board/<int:boardId>', views.EditBoard.as_view(), name='edit_board'),
+	path('delete_board/<int:boardId>', views.DeleteBoard.as_view(), name='delete_board'),
+	path('mute_people/<int:boardMemberId>', views.MutePeople.as_view(), name='mute_people'),
+	path('unmute_people/<int:boardMemberId>', views.UnmutePeople.as_view(), name='unmute_people'),
+	path('remove_people/<int:boardMemberId>', views.RemovePeople.as_view(), name='remove_people'),
 ]

@@ -5,12 +5,15 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Board as BoardModel, BoardMembers, BoardMemberStatus
+from .models import Board as BoardModel, BoardMembers
 from .models import Poll, Choices, MemberPollChoice, BoardInvitation,BoardMembersAccessRights
 from post.models import Post 
 from globaltables.models import BoardType, Role, DefaultRole, AccessRights
 from django.db.models import Q
 from datetime import datetime, date, time
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 import random
 import string
 
@@ -55,24 +58,44 @@ class CreateBoard(View):
 				token = token,
 			)
 		newBoard.save()
-
-		role = Role.objects.filter(Q(boardTypeId=boardType), Q(role="Admin")).first()
-		status = BoardMemberStatus.objects.get(status = 'active')
+		role = None
+		if boardType.boardType == 'Education':
+			role = Role.objects.filter(Q(boardTypeId=boardType), Q(role="Faculty")).first()
+		else:
+			role = Role.objects.filter(Q(boardTypeId=boardType),
+				Q(role="Project Manager")).first()
 
 		joinBoard = BoardMembers(
 				addedOn = datetime.now(),
-				statusId =  status
+				role = role,
+				isAdmin = True
 			)
 
 		joinBoard.save()
 		joinBoard.boardId.add(newBoard)
 		joinBoard.user.add(curr_user)
-		joinBoard.roleId.add(role)
 
 		for access in AccessRights.objects.all():
 			giveAccessRight = BoardMembersAccessRights(boardMember = joinBoard)
 			giveAccessRight.save()
 			giveAccessRight.accessRight.add(access)
+
+		Emailreceiver = createdBy.email
+		EmailTitle = 'New Board Created'
+		context = {
+			'user': curr_user, 'board':newBoard
+		}
+		html_message = render_to_string('emails/boardCreated.html',context)
+		plain_message = strip_tags(html_message)
+
+		send_mail(
+				EmailTitle,
+				plain_message,
+				'wemeetcare@gmail.com',
+				[Emailreceiver],
+				fail_silently = False,
+				html_message=html_message
+			)
 
 		return redirect('home')
 
@@ -85,12 +108,66 @@ class CreateBoard(View):
 				return token
 
 
+
+@method_decorator(login_required, name='dispatch')
+class EditBoard(View):
+	
+	def get(self ,request, boardId):
+		board = BoardModel.objects.filter(boardId = boardId).first()
+		curr_user = request.user
+		if not board:
+			return render(request, "404.html")
+
+		members = BoardMembers.objects.filter(boardId = board)
+
+		notMember = 1
+		for mem in members:
+			if mem.user.first() == request.user:
+				notMember = 0
+				currMember = mem
+
+		if (board.createdBy != curr_user) and notMember:
+			return render(request, "404.html")
+
+		editRight = AccessRights.objects.get(accessRightCode='UPDATE_BOARD')
+		canEdit = BoardMembersAccessRights.objects.filter(
+			Q(boardMember=currMember.id), Q(accessRight=editRight.id))
+		
+		if not canEdit:
+			return render(request, "404.html")
+
+		return render(request, 'board/editBoard.html',
+			{'board':board, 'user': curr_user})
+
+
+	def post(self, request, boardId):
+		newTitle = request.POST['boardTitle']
+		newDescription = request.POST['boardDescription']
+
+		board = BoardModel.objects.filter(boardId = boardId).first()
+		board.boardTitle = newTitle
+		board.boardDescription = newDescription
+		board.save()
+
+		return redirect('board_details', boardId=boardId)
+
+
+@method_decorator(login_required, name='dispatch')
+class DeleteBoard(View):
+
+	def get(self ,request, boardId):
+		board = BoardModel.objects.filter(boardId = boardId).first()
+		board.delete()
+
+		return redirect('home')
+
+
 @method_decorator(login_required, name='dispatch')
 class JoinBoard(View):
 	defaultAccessRights = []
 
 	def __init__(self):
-		defaultAccessCodes = ['VIEW_POST', 'GIVE_VOTE', 'VIEW_POLL_RESULT', 'POST_COMMENT']
+		defaultAccessCodes = ('VIEW_POST', 'GIVE_VOTE', 'VIEW_POLL_RESULT', 'POST_COMMENT')
 
 		for code in defaultAccessCodes:
 			accessRight = AccessRights.objects.get(accessRightCode = code)
@@ -114,22 +191,22 @@ class JoinBoard(View):
 				Q(boardId = board.boardId))
 
 		if isMember:
+			if isMember.isRemoved:
+				print("board not found")
+				return redirect('home')
 			print("you have already joined this board.")
 			return redirect('home')
 
 		role = DefaultRole.objects.filter(boardType = board.boardType).first()
-		
-		status = BoardMemberStatus.objects.get(status = 'active')
 
 		joinBoard = BoardMembers(
 				addedOn = datetime.now(),
-				statusId =  status
+				role = role,
 			)
 		
 		joinBoard.save()
 		joinBoard.boardId.add(board)
 		joinBoard.user.add(curr_user)
-		joinBoard.roleId.add(role)
 
 		for access in self.defaultAccessRights:
 			giveAccessRight = BoardMembersAccessRights(boardMember = joinBoard)
@@ -143,14 +220,13 @@ class JoinBoard(View):
 class BoardDetails(View):
 
 	def get(self ,request, boardId):
-
-		print("boardId: ", boardId)
 		board = BoardModel.objects.filter(boardId = boardId).first()
 		curr_user = request.user
 		if not board:
 			return render(request, "404.html")
 
-		members = BoardMembers.objects.filter(boardId = board)
+		members = BoardMembers.objects.filter(
+			Q(boardId = board), Q(isRemoved=False))
 		notMember = 1
 		for mem in members:
 			if mem.user.first() == request.user:
@@ -223,9 +299,6 @@ class SavePollVote(View):
 		poll = Poll.objects.get(pk = choice.pollId.pollId)
 		curr_user = request.user
 		votedFor = MemberPollChoice.objects.filter(Q(pollId = poll), Q(user = curr_user)).first()
-		print(choice)
-		print(poll)
-		print(votedFor)
 
 		if votedFor:
 			oldChoice = votedFor.choiceId
@@ -235,14 +308,12 @@ class SavePollVote(View):
 			votedFor.save()
 			oldChoice.save()
 			choice.save()
-			print(oldChoice)
 		else:
 			saveVote = MemberPollChoice(pollId = poll, choiceId = choice)
 			saveVote.save()
 			saveVote.user.add(curr_user)
 			choice.count += 1
 			choice.save()
-			print("first vote")
 
 		return HttpResponse("success")
 
@@ -266,14 +337,21 @@ class InvitePeople(View):
 			print("you cant join this board,your are the owner of this board")
 			return HttpResponse("success")
 		isMember = BoardMembers.objects.filter(Q(user = user),
-				Q(boardId = boardId))
-		if isMember:
+				Q(boardId = boardId)).first()
+		if isMember and isMember.isRemoved==False:
 			print("user has already joined this board.")
 			return HttpResponse("success")
-		print(board)
+
+		alreadyInvited = BoardInvitation.objects.filter(
+			Q(user=user),Q(board=board),Q(status='pending'))
+
+		if alreadyInvited:
+			print("Invitation is already in pending.")
+			return HttpResponse("success")
+
 		roleId = request.POST.get('roleId')
 		role = Role.objects.get(roleId = roleId)
-		print(roleId)
+		
 		invite = BoardInvitation(
 				board = board,
 				role = role,
@@ -289,7 +367,6 @@ class InvitePeople(View):
 class AcceptBoardInvitation(View):
 
 	def post(self, request, boardInvitationId):
-		print(boardInvitationId)
 		try:
 			invitation = BoardInvitation.objects.get(pk = boardInvitationId)
 		except invitation.DoesNotExist:
@@ -307,36 +384,38 @@ class AcceptBoardInvitation(View):
 			return HttpResponse('success')
 
 		isMember = BoardMembers.objects.filter(Q(user = curr_user),
-				Q(boardId = board.boardId))
+				Q(boardId = board.boardId)).first()
 
-		if isMember:
-			print("you have already joined this board.")
+		role = Role.objects.get(pk = invitation.role.roleId)
+
+		if isMember and isMember.isRemoved:
+			if isMember.isRemoved:
+				isMember.isRemoved = False
+				isMember.role = role
+				isMember.save()
+			else:
+				print("you have already joined this board.")
 			invitation.status = 'accepted'
 			invitation.save()
 			return HttpResponse('success')
 
-		role = Role.objects.get(pk = invitation.role.roleId)
-		status = BoardMemberStatus.objects.get(status = 'active')
-
 		joinBoard = BoardMembers(
 				addedOn = datetime.now(),
-				statusId =  status
+				role = role,
 			)
 		
 		joinBoard.save()
 		joinBoard.boardId.add(board)
 		joinBoard.user.add(curr_user)
-		joinBoard.roleId.add(role)
 
 		invitation.status = 'accepted'
 		invitation.save()
-
+		print("accepted invitation")
 		return HttpResponse('success')
 
 @method_decorator(login_required, name='dispatch')
 class RejectBoardInvitation(View):
 	def post(self, request, boardInvitationId):
-		print(boardInvitationId)
 		try:
 			invitation = BoardInvitation.objects.get(pk = boardInvitationId)
 		except invitation.DoesNotExist:
@@ -369,6 +448,8 @@ class PeopleBoardDetails(View):
 		accessRights = AccessRights.objects.all()
 		board = BoardModel.objects.filter(boardId = boardMember.boardId.first().boardId).first()
 		curr_user = request.user
+
+
 		return render(request, 'board/peopleBoardDetails.html',
 			{'boardMember':boardMember, 'accessRights':accessRights,
 			'board':board, 'user':curr_user})
@@ -410,8 +491,85 @@ class GrantAccessRight(View):
 			return HttpResponse('success')
 		return HttpResponse('success')
 
+
 @method_decorator(login_required, name='dispatch')
-class EditBoard(View):
-	
-	def get(self, request):
-		return render(request ,'board/editBoard.html')
+class MutePeople(View):
+
+	rightsForMutedPeoples = []
+
+	def __init__(self):
+		codes = ('VIEW_POST', 'VIEW_POLL_RESULT')
+
+		for code in codes:
+			accessRight = AccessRights.objects.get(accessRightCode = code)
+			self.rightsForMutedPeoples.append(accessRight)
+
+	def get(self, request, boardMemberId):
+		try:
+			member = BoardMembers.objects.get(pk=boardMemberId)
+			currRights = BoardMembersAccessRights.objects.filter(
+				boardMember = member)
+		except:
+			return redirect(request.META['HTTP_REFERER'])
+			
+		for right in currRights:
+			print(right.accessRight.first().accessRightDescription)
+			right.delete()
+		member.isMuted = True
+		member.save()
+
+		for access in self.rightsForMutedPeoples:
+			giveAccessRight = BoardMembersAccessRights(boardMember = member)
+			giveAccessRight.save()
+			giveAccessRight.accessRight.add(access)
+
+		return redirect(request.META['HTTP_REFERER'])
+
+
+
+@method_decorator(login_required, name='dispatch')
+class UnmutePeople(View):
+	defaultAccessRights = []
+
+	def __init__(self):
+		defaultAccessCodes = ('VIEW_POST', 'GIVE_VOTE', 'VIEW_POLL_RESULT', 'POST_COMMENT')
+
+		for code in defaultAccessCodes:
+			accessRight = AccessRights.objects.get(accessRightCode = code)
+			self.defaultAccessRights.append(accessRight)
+
+
+	def get(self, request, boardMemberId):
+		try:
+			member = BoardMembers.objects.get(pk=boardMemberId)
+			currRights = BoardMembersAccessRights.objects.filter(
+				boardMember = member)
+		except:
+			return redirect(request.META['HTTP_REFERER'])
+			
+		for right in currRights:
+			print(right.accessRight.first().accessRightDescription)
+			right.delete()
+		member.isMuted = False
+		member.save()
+
+		for access in self.defaultAccessRights:
+			giveAccessRight = BoardMembersAccessRights(boardMember = member)
+			giveAccessRight.save()
+			giveAccessRight.accessRight.add(access)
+
+		return redirect(request.META['HTTP_REFERER'])
+
+
+@method_decorator(login_required, name='dispatch')
+class RemovePeople(View):
+	def get(self, request, boardMemberId):
+		try:
+			member = BoardMembers.objects.get(pk=boardMemberId)
+		except:
+			return redirect(request.META['HTTP_REFERER'])
+
+		member.isRemoved = True
+		member.save()
+		return redirect(request.META['HTTP_REFERER'])
+

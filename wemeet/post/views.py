@@ -3,9 +3,10 @@ from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Board as BoardModel, BoardMembers, BoardMemberStatus
+# from .models import Board as BoardModel, BoardMembers, BoardMemberStatus
+from board.models import Board as BoardModel, BoardMembers, BoardMembersAccessRights
 from .models import Post as Post,Post_Attachments,Post_Comment
-from globaltables.models import BoardType, Role
+from globaltables.models import BoardType, Role, AccessRights
 from django.db.models import Q
 from datetime import datetime, date, time
 import random
@@ -95,12 +96,24 @@ class CreatePost(View):
 @method_decorator(login_required, name='dispatch')
 class ViewPost(View):
 	def get(self, request,postId):
-		# board = BoardModel.objects.filter(boardId = boardId).first()
+		curr_user = request.user
 		post = Post.objects.filter(postId = postId).first()
+		board = BoardModel.objects.get(pk = post.boardId.boardId)
+		boardMember = BoardMembers.objects.filter(
+			Q(boardId=board.boardId), Q(user=curr_user.id)).first()
+		viewRight = AccessRights.objects.get(accessRightCode='VIEW_POST')
+		canVeiwPost = BoardMembersAccessRights.objects.filter(
+			Q(boardMember=boardMember.id), Q(accessRight=viewRight.id))
+
+		if not canVeiwPost:
+			return render(request, "404.html")
+
 		postAttachment = Post_Attachments.objects.filter(postId = postId).first()
 		comments = Post_Comment.objects.filter(postId = postId)
-		print(comments);	
-		return render(request, 'board/postDetails.html',{'postobj':post , 'comments':comments,'postatt':postAttachment,})
+		
+		return render(request, 'board/postDetails.html',
+			{'postobj':post , 'comments':comments,'postatt':postAttachment,
+				'board': board, 'user': curr_user})
 
 @method_decorator(login_required, name='dispatch')
 class DeletePost(View):
