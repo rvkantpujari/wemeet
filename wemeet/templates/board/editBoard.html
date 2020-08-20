@@ -44,16 +44,7 @@
                                                         <br>
                                                         <textarea name="boardDescription" id="boardForm" value="" cols="3" class="form-control" style="resize: vertical; height: 100px;" placeholder="Enter description" cols="5" required>{{ board.boardDescription}}</textarea>
                                                         <br>
-                                                        <select name="boardType" id="id_board_type" class="form-control form-input" required>
-                                                        <option value="" disabled selected>Select Board Type
-                                                        </option>
-                                                        {% for boardType in boardTypes %}
-                                                            <option value="{{ boardType.boardTypeId }}" {% if boardType.boardTypeId == board.boardType.boardTypeId %}
-                                                            selected {% endif %}>
-                                                                {{ boardType.boardType }}
-                                                            </option>
-                                                        {% endfor %}
-                                                        </select>
+
                                                         <button type="submit" class="btn btn-login btn-green"><span>Update</span></button>
                                                         &nbsp;&nbsp;
                                                         <button type="button" onclick=location.href="{% url 'board_details' boardId=board.boardId  %}" class="btn btn-login btn-green">
@@ -61,7 +52,7 @@
                                                         </button>
                                                         {% if hasRight.DELETE_BOARD %}
                                                         &nbsp;&nbsp;
-                                                        <button type="button" class="btn btn-login btn-green" onclick=location.href="{% url 'delete_board' boardId=board.boardId  %}" ob><span>Delete</span>
+                                                        <button type="button" class="btn btn-danger" onclick=location.href="{% url 'delete_board' boardId=board.boardId  %}" ob><span>Delete</span>
                                                         </button>
                                                         {% endif %}
                                                     </form>

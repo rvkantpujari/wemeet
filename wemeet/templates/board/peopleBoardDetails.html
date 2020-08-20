@@ -18,15 +18,14 @@
 							{{ boardMember.user.first.first_name }} 
 							{{ boardMember.user.first.last_name }}
 						</div>
+						<a href="{% url 'board_details' boardId=boardMember.boardId.first.boardId %}">
 						<h4 style="color: #86BC42;">
-							<a href="{% url 'board_details' boardId=boardMember.boardId.first.boardId %}">
 							{{ boardMember.boardId.first.boardTitle }}
-							</a>
 						</h4>
+						</a>
+						
 						<div class="subtitle">
-							{% for role in  boardMember.roleId.all %}
-								<span>{{ role.role }}</span>
-							{% endfor %}
+								<span>{{ boardMember.role.role }}</span>
 						</div>
 					</div>
 			</div>
@@ -51,7 +50,7 @@
 					<div class="table-body">
 							<table class="edu-table-responsive table-hover">
 									<tbody>														
-									{% if hasRight.GIVE_PERMISSION and boardMember.user.first != user and isNotAdmin %}
+									{% if hasRight.CHANGE_PERMISSION and boardMember.user.first != user and boardMember.isAdmin == False %}
 										{% for right in accessRights %}
 											<tr class="table-row" style="text-transform:capitalize;">
 													<td class="col-1" style="padding-left: 20px;">

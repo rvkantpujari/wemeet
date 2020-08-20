@@ -15,7 +15,8 @@ def totalBoardMembers(board):
 
 @register.filter(name='memberRole')
 def memberRole(board, user):
-	role = BoardMembers.objects.get(boardId = board, user = user).roleId
+	role = BoardMembers.objects.get(boardId = board, user = user).role
+	print("role: ",role)
 	return role
 
 

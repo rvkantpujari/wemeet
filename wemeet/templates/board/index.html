@@ -94,11 +94,8 @@
                                         <div class="panel-body">
                                             <span class="label label-default">{{ board.boardType }}</span>
                                             <br>
-                                            {% with board|memberRole:user as roles %}
-                                            Role: {% for role in roles.all %}
-                                                    {{ role }}
-                                                {% endfor %} 
-                                            {% endwith %}
+                                            Role: {{ board|memberRole:user }}
+                                                
                                         </div>
                                         <hr>
                                         <div style="font-size: 1.3rem" class="board-desc">
