@@ -29,3 +29,17 @@ def votedFor(choice, user):
 	else:
 		return 0
 
+
+
+@register.filter(name='isUserNotAdmin')
+def isUserNotAdmin(board, user):
+	try:
+		boardMember = BoardMembers.objects.filter(Q(boardId=board),
+			Q(user=user), Q(isAdmin=True)).first()
+	except:
+		print("user not found in boardMember!!")
+		return True
+	if boardMember:
+		return False
+	else:
+		return True

@@ -20,4 +20,5 @@ urlpatterns = [
 	path('mute_people/<int:boardMemberId>', views.MutePeople.as_view(), name='mute_people'),
 	path('unmute_people/<int:boardMemberId>', views.UnmutePeople.as_view(), name='unmute_people'),
 	path('remove_people/<int:boardMemberId>', views.RemovePeople.as_view(), name='remove_people'),
+	path('leave_board/<int:boardId>', views.LeaveBoard.as_view(), name='leave_board'),
 ]

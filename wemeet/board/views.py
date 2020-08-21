@@ -575,3 +575,16 @@ class RemovePeople(View):
 		member.save()
 		return redirect(request.META['HTTP_REFERER'])
 
+
+@method_decorator(login_required, name='dispatch')
+class LeaveBoard(View):
+	def get(self, request, boardId):
+		try:
+			boardMember = BoardMembers.objects.filter(Q(boardId=boardId),
+				Q(user=request.user)).first()
+		except:
+			return redirect('home')
+
+		boardMember.isRemoved = True
+		boardMember.save()
+		return redirect('home')

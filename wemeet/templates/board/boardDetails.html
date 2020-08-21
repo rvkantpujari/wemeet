@@ -28,7 +28,9 @@
                 <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;">
                     <!-- Default panel contents -->
                     <div class="panel-heading text-left" style="background-color: #86bc42;">
-                        <span class="h3" style="font-weight: 800">{{ board.boardTitle }}</span>
+                        <span class="h3" style="font-weight: 800">
+                            <svg focusable="false" width="24" height="24" viewBox="0 0 24 24" class=" NMm5M"><path d="M12 16.41l-6.71-6.7 1.42-1.42 5.29 5.3 5.29-5.3 1.42 1.42z"></path></svg>
+                        {{ board.boardTitle }}</span>
                         <span class="pull-right" style="font-weight: 500; margin-top: -5px;">
                             <a href="#" class="btn btn-login" data-toggle="modal" data-target="#viewJoinCodeModal">
                                 Code: <span class="badge badge-danger ml-2" style="text-transform: lowercase;">{{ board.token }}</span>
@@ -40,11 +42,18 @@
                         <div style="font-size: 1.3rem;">
                             <h4 style="line-height: 1.4;">{{ board.boardDescription }}</h4>
                             <hr>
+                            {% if board|isUserNotAdmin:user %}
+                            <a href="{% url 'leave_board' boardId=board.boardId %}" class="btn btn-green btn-login pull-left"
+                            style="border-radius: 10px;">
+                                <span> Leave </span>
+                            </a>
+                            {% endif %}
                             {% if hasRight.UPDATE_BOARD %}
                             <a href="{% url 'edit_board' boardId=board.boardId %}" class="btn btn-login btn-green pull-right" title="Manage Board" style="border-radius: 10px;">
                                 <span class="fa fa-cogs fa-lg"></span>
                             </a>
                             {% endif %}
+
                         </div>
                         <br>
                     </div>
@@ -356,7 +365,7 @@
         <div class="modal-body row">
             <div class="col-md-2"></div>
             <div class="col-md-8 text-center">
-                <h1 id="boardToken">{{board.token}}</h1>
+                <span style="font-size: 5em; color: black" id="boardToken">{{board.token}}</span>
             </div>
             <div class="col-md-2"></div>
         </div>
