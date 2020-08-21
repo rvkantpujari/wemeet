@@ -285,7 +285,7 @@
                                                     </td>
                                                     <td class="col-4">
                                                     {% if member.isAdmin == False %}
-                                                        {% if member.isRemoved == False %}
+                                                        {% if member.user.first != user %}
                                                             {% if hasRight.MUTE_MEMBER %}
                                                             {% if member.isMuted %}
                                                                 <span class="label label-primary">
@@ -304,6 +304,10 @@
                                                             Remove</a>
                                                             </span>
                                                             {% endif %}
+                                                        {% else %}
+                                                            <span class="link-page  label label-success" style="color: white">
+                                                        You
+                                                        </span>
                                                         {% endif %}
                                                     
                                                     {% else %}
@@ -566,7 +570,7 @@
     {
         var choice;
         choice = $(this).val();
-
+        console.log(choice);
         $.ajax(
         {
             type:"GET",

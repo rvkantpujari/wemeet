@@ -23,8 +23,10 @@ class Home(View):
 	
 	def get(self, request):
 		curr_user = request.user
-		created = BoardModel.objects.filter(createdBy=curr_user)
-		joined = BoardModel.objects.filter(boardmembers__user=curr_user)
+		created = BoardModel.objects.filter(Q(createdBy=curr_user),
+			Q(boardmembers__isRemoved=False))
+		joined = BoardModel.objects.filter(Q(boardmembers__user=curr_user),
+			Q(boardmembers__isRemoved=False))
 		pendingInvitations = BoardInvitation.objects.filter(Q(user=curr_user),
 			Q(status='pending'))
 		
@@ -197,7 +199,7 @@ class JoinBoard(View):
 			print("you have already joined this board.")
 			return redirect('home')
 
-		role = DefaultRole.objects.filter(boardType = board.boardType).first()
+		role = DefaultRole.objects.filter(boardType = board.boardType).first().role
 
 		joinBoard = BoardMembers(
 				addedOn = datetime.now(),
