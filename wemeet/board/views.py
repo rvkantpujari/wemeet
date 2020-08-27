@@ -194,7 +194,7 @@ class JoinBoard(View):
 			return redirect(request.META['HTTP_REFERER'])
 
 		isMember = BoardMembers.objects.filter(Q(user = curr_user),
-				Q(boardId = board.boardId))
+				Q(boardId = board.boardId)).first()
 
 		if isMember:
 			if isMember.isRemoved:

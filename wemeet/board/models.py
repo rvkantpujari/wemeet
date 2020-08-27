@@ -27,7 +27,7 @@ class BoardMembers(models.Model):
 	isAdmin = models.BooleanField(default=False)
 	isRemoved = models.BooleanField(default=False)
 	isMuted = models.BooleanField(default=False)
-
+	
 	def __str__(self):
 		return str(self.boardId) + " " + str(self.user)
 
