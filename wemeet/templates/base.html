@@ -25,6 +25,29 @@
     <link type="text/css", rel='stylesheet', href="{% static 'assets/css/color-1.css' %}" id="color-skins">
     <script src="{% static 'assets/libs/jquery/jquery-2.1.4.min.js' %}"></script>
     <script src="{% static 'assets/libs/js-cookie/js.cookie.js' %}"></script>
+
+<style>
+    .error
+    {
+        border: 1px solid red;
+        background-color: #F23827; 
+        color: #FFFFFF;
+        font-size: 22px;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: 10px;  
+    }
+    .info
+    {
+        border: 1px solid #0790C2;
+        background-color: #0790C2; 
+        color: #FFFFFF;
+        font-size: 22px;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: 10px;  
+    }
+</style>
 </head>
 <body>
 <!-- HEADER-->
@@ -34,6 +57,15 @@
     {% endblock navbar %}
 </header>
 <!-- WRAPPER-->
+<div style="display: grid; place-items:center;">
+    
+    {% if messages %}
+        {% for message in messages %}
+           <span class="{{ message.tags }}">  {{ message }}
+        {% endfor %}
+    {% endif %}
+
+</div>
 <div id="wrapper-content">
     <!-- PAGE WRAPPER-->
     <div id="page-wrapper">

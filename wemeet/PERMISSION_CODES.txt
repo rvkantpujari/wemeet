@@ -19,7 +19,13 @@ id  accessRightCode		accessRightDescription
 15	VIEW_MEM_PER		user can view other people permissions
 16	MUTE_MEMBER			user can mute any member(except admin) of board
 17	REMOVE_MEMBER		user can remove any member(except admin) of board
+18	CHANGE_ROLE			user can change role of any board member
 
-DEFAULT ROLE
-	BOARD_TYPE_ID
-	ROLE_ID
+
+--- when user join baord ---
+	('VIEW_POST', 'GIVE_VOTE', 'VIEW_POLL_RESULT', 'POST_COMMENT')
+
+--- when muted ---
+	('VIEW_POST', 'VIEW_POLL_RESULT')
+
+

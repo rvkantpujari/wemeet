@@ -14,6 +14,7 @@ from datetime import datetime, date, time
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib import messages
 import random
 import string
 
@@ -23,13 +24,11 @@ class Home(View):
 	
 	def get(self, request):
 		curr_user = request.user
-		created = BoardModel.objects.filter(Q(createdBy=curr_user),
-			Q(boardmembers__isRemoved=False))
+		created = BoardModel.objects.filter(Q(createdBy=curr_user))
 		joined = BoardModel.objects.filter(Q(boardmembers__user=curr_user),
-			Q(boardmembers__isRemoved=False))
+			Q(boardmembers__isRemoved=False),~Q(createdBy=curr_user))
 		pendingInvitations = BoardInvitation.objects.filter(Q(user=curr_user),
 			Q(status='pending'))
-		
 		return render(request ,'board/index.html', {'boardsCreated':created,
 			'boardsJoined':joined, 'user': request.user,
 			'pendingInvitations': pendingInvitations})
@@ -98,7 +97,8 @@ class CreateBoard(View):
 				fail_silently = False,
 				html_message=html_message
 			)
-
+		messages.info(request,
+				"Board Created successfully.")
 		return redirect('home')
 
 
@@ -150,7 +150,8 @@ class EditBoard(View):
 		board.boardTitle = newTitle
 		board.boardDescription = newDescription
 		board.save()
-
+		messages.info(request,
+				"Board Edited successfully.")
 		return redirect('board_details', boardId=boardId)
 
 
@@ -160,7 +161,8 @@ class DeleteBoard(View):
 	def get(self ,request, boardId):
 		board = BoardModel.objects.filter(boardId = boardId).first()
 		board.delete()
-
+		messages.info(request,
+				"Board Deleted successfully.")
 		return redirect('home')
 
 
@@ -181,23 +183,25 @@ class JoinBoard(View):
 		board = BoardModel.objects.filter(token = token).first()
 		if board is None:
 			print("board not found")
-			return redirect('home') 
+			messages.error(request, "board not found")
+			return redirect(request.META['HTTP_REFERER'])
 		if board.isDeleted:
-			print("board not found")
-			return redirect('home')
+			messages.error(request, "board not found")
+			return redirect(request.META['HTTP_REFERER'])
 		if board.createdBy == curr_user:
-			print("you cant join this board,your are the owner of this board")
-			return redirect('home')
+			messages.info(request,
+				"you cant join this board, your are the owner of this board")
+			return redirect(request.META['HTTP_REFERER'])
 
 		isMember = BoardMembers.objects.filter(Q(user = curr_user),
-				Q(boardId = board.boardId))
+				Q(boardId = board.boardId)).first()
 
 		if isMember:
 			if isMember.isRemoved:
-				print("board not found")
-				return redirect('home')
-			print("you have already joined this board.")
-			return redirect('home')
+				messages.error(request, "board not found")
+				return redirect(request.META['HTTP_REFERER'])
+			messages.info(request ,"you have already joined this board.")
+			return redirect(request.META['HTTP_REFERER'])
 
 		role = DefaultRole.objects.filter(boardType = board.boardType).first().role
 
@@ -288,7 +292,8 @@ class CreatePoll(View):
 			else:
 				break
 			i += 1
-
+		messages.info(request,
+				"Poll Created successfully.")
 		return redirect(request.META['HTTP_REFERER'])
 
 
@@ -332,23 +337,26 @@ class InvitePeople(View):
 		except User.DoesNotExist:
 			user = None
 		if not user:
-			print("user DoesNotExist")
+			messages.error(request,"user DoesNotExist.")
 			return HttpResponse("success")
 		board = BoardModel.objects.filter(pk = boardId).first()
 		if board.createdBy == user:
-			print("you cant join this board,your are the owner of this board")
+			messages.error(request,"You cannot invite youself.")
 			return HttpResponse("success")
 		isMember = BoardMembers.objects.filter(Q(user = user),
 				Q(boardId = boardId)).first()
 		if isMember and isMember.isRemoved==False:
-			print("user has already joined this board.")
+			messages.info(request,
+				"This user has already joined the board.")
 			return HttpResponse("success")
 
 		alreadyInvited = BoardInvitation.objects.filter(
 			Q(user=user),Q(board=board),Q(status='pending'))
 
 		if alreadyInvited:
-			print("Invitation is already in pending.")
+			print("invitation is already in pending.")
+			messages.info(request,
+				"Invitation is already in pending.")
 			return HttpResponse("success")
 
 		roleId = request.POST.get('roleId')
@@ -363,6 +371,26 @@ class InvitePeople(View):
 		invite.save()
 		invite.user.add(user)
 		invite.save()
+
+		Emailreceiver = user.email
+		EmailTitle = 'Join Board Invitation'
+		context = {
+			'invitedBy': curr_user, 'board':board, 'role':role
+		}
+		html_message = render_to_string('emails/InvitationSent.html',context)
+		plain_message = strip_tags(html_message)
+
+		send_mail(
+				EmailTitle,
+				plain_message,
+				'wemeetcare@gmail.com',
+				[Emailreceiver],
+				fail_silently = False,
+				html_message=html_message
+			)
+
+		messages.info(request,
+				"Invitation Sent successfully.")
 		return HttpResponse("success")
 
 @method_decorator(login_required, name='dispatch')
@@ -379,10 +407,10 @@ class AcceptBoardInvitation(View):
 			board = None
 		curr_user = request.user
 		if board is None:
-			print("board not found")
+			messages.error(request,"Board not found.It may be deleted")
 			return HttpResponse('success') 
 		if board.isDeleted:
-			print("board not found")
+			messages.error(request,"Board not found.It may be deleted")
 			return HttpResponse('success')
 
 		isMember = BoardMembers.objects.filter(Q(user = curr_user),
@@ -396,7 +424,7 @@ class AcceptBoardInvitation(View):
 				isMember.role = role
 				isMember.save()
 			else:
-				print("you have already joined this board.")
+				messages.info(request,"you are already member of this board.")
 			invitation.status = 'accepted'
 			invitation.save()
 			return HttpResponse('success')
@@ -412,7 +440,6 @@ class AcceptBoardInvitation(View):
 
 		invitation.status = 'accepted'
 		invitation.save()
-		print("accepted invitation")
 		return HttpResponse('success')
 
 @method_decorator(login_required, name='dispatch')
@@ -428,10 +455,10 @@ class RejectBoardInvitation(View):
 			board = None
 		curr_user = request.user
 		if board is None:
-			print("board not found")
+			messages.error(request,"Board not found.It may be deleted")
 			return HttpResponse('success')
 		if board.isDeleted:
-			print("board not found")
+			messages.error(request,"Board not found.It may be deleted.")
 			return HttpResponse('success')
 
 		invitation.status = 'rejected'
@@ -451,10 +478,17 @@ class PeopleBoardDetails(View):
 		board = BoardModel.objects.filter(boardId = boardMember.boardId.first().boardId).first()
 		curr_user = request.user
 
+		roles = Role.objects.filter(boardTypeId = board.boardType)
+		roles = roles
+		currRole = boardMember.role
+		changeRole = []
+		for role in roles:
+			if role.roleId != currRole.roleId:
+				changeRole.append(role)
 
 		return render(request, 'board/peopleBoardDetails.html',
 			{'boardMember':boardMember, 'accessRights':accessRights,
-			'board':board, 'user':curr_user})
+			'board':board, 'user':curr_user, 'roles': changeRole})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -575,3 +609,30 @@ class RemovePeople(View):
 		member.save()
 		return redirect(request.META['HTTP_REFERER'])
 
+
+@method_decorator(login_required, name='dispatch')
+class LeaveBoard(View):
+	def get(self, request, boardId):
+		try:
+			boardMember = BoardMembers.objects.filter(Q(boardId=boardId),
+				Q(user=request.user)).first()
+		except:
+			return redirect('home')
+
+		boardMember.isRemoved = True
+		boardMember.save()
+		messages.error(request,"You have left the board")
+		return redirect('home')
+
+
+@method_decorator(login_required, name='dispatch')
+class ChangeRole(View):
+
+	def get(self, request, boardMemberId):
+		roleId = request.GET.get('roleId')
+		member = BoardMembers.objects.get(pk=boardMemberId)
+		role = Role.objects.get(pk=roleId)
+		print(role, member.user.first().first_name)
+		member.role = role
+		member.save()
+		return redirect(request.META['HTTP_REFERER'])
