@@ -1,0 +1,8 @@
+{% autoescape off %}
+<h4>Hi {{ user.first_name }} {{ user.last_name }},</h4>
+Please click on the link to confirm your registration,
+<b>http://{{ domain }}{% url 'activate' uidb64=uid token=token %}</b>
+<br>
+Thanks for registration<br>
+Team WeMeet
+{% endautoescape %}

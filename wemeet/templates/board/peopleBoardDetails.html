@@ -8,7 +8,6 @@
 {% with boardMember|currentAccesses as currentAccesses %}
 {% with board|getUsersAccessRights:user as hasRight %}
 
-
 <div class="section section-padding profile-teacher">
 	<div class="container">
 		<div class="profile-teacher-wrapper">
@@ -18,12 +17,30 @@
 							{{ boardMember.user.first.first_name }} 
 							{{ boardMember.user.first.last_name }}
 						</div>
-						<h4 style="color: #86BC42;">{{ boardMember.boardId.first.boardTitle }}</h4>
+						<a href="{% url 'board_details' boardId=boardMember.boardId.first.boardId %}">
+						<h4 style="color: #86BC42;">
+							{{ boardMember.boardId.first.boardTitle }}
+						</h4>
+						</a>
+						
 						<div class="subtitle">
-							{% for role in  boardMember.roleId.all %}
-								<span>{{ role.role }}</span>
-							{% endfor %}
+								<span>{{ boardMember.role.role }}</span>
 						</div>
+						{% if hasRight.CHANGE_ROLE and boardMember.isAdmin == False %}
+						<div>
+							<form action="{% url 'change_role' boardMemberId=boardMember.id %}">
+							<label for="id_board_type" class="control-label form-label">Chage Role: <span class="highlight">*</span></label>
+		                    <select name="roleId" id="id_board_type" class="form-control form-input" required>
+		                        <option value="" disabled selected>Select Role</option>
+		                        {% for role in roles %}
+		                            <option value="{{ role.roleId }}">{{ role.role }}</option>
+		                        {% endfor %}
+		                    </select>
+		                    <br>
+		                    <button type="submit" class="btn btn-login btn-green" id="createButton"><span>Change</span></button>
+		                	</form>
+						</div>
+						{% endif %}
 					</div>
 			</div>
 		</div>
@@ -47,23 +64,32 @@
 					<div class="table-body">
 							<table class="edu-table-responsive table-hover">
 									<tbody>														
-									{% if hasRight.GIVE_PERMISSION %}
+									{% if hasRight.CHANGE_PERMISSION and boardMember.user.first != user and boardMember.isAdmin == False %}
 										{% for right in accessRights %}
 											<tr class="table-row" style="text-transform:capitalize;">
 													<td class="col-1" style="padding-left: 20px;">
 														<h4> {{ right }} </h4>
 													</td>
 													<td class="col-4">
-														<h4><input type="checkbox" name="accessRight" value="{{ right.id }}"
+														<input type="checkbox" name="accessRight" value="{{ right.id }}"
 															class="access_right_class"
-														{% if currentAccesses|hasAccess:right %} checked {% endif %}></h4>
+														{% if currentAccesses|hasAccess:right %} checked {% endif %}>
 													</td>
 											</tr>
 										{% endfor %}
 									{% else %}
 										{% for right in accessRights %}
 											{% if currentAccesses|hasAccess:right %}
-											<h4> {{ right }} </h4>
+											<tr class="table-row" style="text-transform:capitalize;">
+												<td class="col-1" style="padding-left: 20px;">
+													<h4> {{ right }} </h4>
+												</td>
+												<td class="col-4">
+													<input type="checkbox" name="accessRight" value="{{ right.id }}"
+														class="access_right_class"
+													{% if currentAccesses|hasAccess:right %} checked {% endif %} disabled>
+												</td>
+											</tr>
 											{% endif %}
 										{% endfor %}
 									{% endif %}
@@ -100,8 +126,8 @@
 		            },
 		            success: function( data ) 
 		            {
-										//alert("Right Granted");
-										swal("Permission Granted!!!",'','success');
+						//alert("Right Granted");
+						swal("Permission Granted!!!",'','success');
 		            }
 		         });
         	}
@@ -120,8 +146,8 @@
 		            },
 		            success: function( data ) 
 		            {
-										//alert("Right Revoked");
-										swal("Permission Revoked!!!",'','warning');
+						//alert("Right Revoked");
+						swal("Permission Revoked!!!",'','warning');
 		            }
 		         });
         	}

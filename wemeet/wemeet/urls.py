@@ -19,14 +19,17 @@ from account import views as accountViews
 from django.conf import settings
 from django.conf.urls.static import static
 from board import views as boardViews
+from django.conf.urls import handler404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', boardViews.Home.as_view(), name='home'),
     path('account/', include('account.urls')),
     path('board/', include('board.urls')),
+    path('post/', include('post.urls')),
 ]
 
+# handler404 = 'wemeet.views.handler404'
 
 if settings.DEBUG: 
     urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) 

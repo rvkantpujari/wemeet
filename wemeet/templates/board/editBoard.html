@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Edit Board | {{block.super}} {% endblock %}
+{% block topbar %} {% endblock %}
+{% block content %}
+{% load accessTags %}
+{% with board|getUsersAccessRights:user as hasRight %}
+
+<style>
+    .test:after {
+        content: '\2807';
+        font-size: 25px;
+    }
+    button { margin-top: 5px;}
+    button.btn-danger {
+        background-color: #d9530a;
+    }
+</style>
+<div class="section section-padding courses">
+    <div class="container">
+        
+        <div class="courses-wrapper">
+
+            <!-- Tab panes-->
+            <div class="tab-content courses-content">
+                <!-- boards panel -->
+                <div id="#" role="tabpanel" class="tab-pane fade in active">
+                    <div class="style-show style-grid row">
+                        <div class="col-sm-12">
+                            <div class="news-comment">
+                                <div class="panel panel-default col-md-12" style="border: solid 1px #86bc42; margin-left: 5px;">
+                                    <!-- Default panel contents -->
+                                    <div class="panel-heading text-left">
+                                        <span class="h3 course-syllabus-title underline">Edit Board</span>
+                                        <span class="pull-right">
+                                            created on:  {{ board.createdOn|date:'d-m-Y' }}
+                                        </span>
+                                    </div>
+                                    <div class="panel-body text-justify">
+                                        <br>
+                                        <div style="font-size: 1.3rem">
+                                            <div class="col-md-12">
+                                                <form action="{% url 'edit_board' boardId=board.boardId %}" method="POST" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <input type="text" name="boardTitle" id="id_boardTitle" value="{{ board.boardTitle}}" placeholder="Enter The Board Title" class="form-control form-input" required>
+                                                    <br>
+                                                    <textarea name="boardDescription" id="boardForm" value="" cols="3" class="form-control" style="resize: vertical; height: 100px;" placeholder="Enter description" cols="5" required>{{ board.boardDescription}}</textarea>
+                                                    <br>
+
+                                                    <button type="submit" class="btn btn-login btn-green"><span>Update</span></button>
+                                                    &nbsp;&nbsp;
+                                                    <button type="button" onclick=location.href="{% url 'board_details' boardId=board.boardId  %}" class="btn btn-login btn-green">
+                                                        <span>Cancel</span>
+                                                    </button>
+                                                    {% if hasRight.DELETE_BOARD %}
+                                                    &nbsp;&nbsp;
+                                                    <button type="button" class="btn btn-danger" onclick=location.href="{% url 'delete_board' boardId=board.boardId  %}" ob>Delete
+                                                    </button>
+                                                    {% endif %}
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let boardBtn = document.getElementById('boardBtn');
+    boardBtn.addEventListener("submit", function(e){
+        e.preventDefault();
+    });
+</script>
+{% endwith %}
+{% endblock content %}
