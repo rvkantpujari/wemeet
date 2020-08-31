@@ -27,7 +27,7 @@
     <script src="{% static 'assets/libs/js-cookie/js.cookie.js' %}"></script>
 
 <style>
-    .error
+    span.error
     {
         border: 1px solid red;
         background-color: #F23827; 
@@ -35,9 +35,9 @@
         font-size: 22px;
         padding: 5px;
         border-radius: 5px;
-        margin-top: 10px;  
+        margin-top: 20px;  
     }
-    .info
+    span.info
     {
         border: 1px solid #0790C2;
         background-color: #0790C2; 
@@ -45,7 +45,7 @@
         font-size: 22px;
         padding: 5px;
         border-radius: 5px;
-        margin-top: 10px;  
+        margin-top: 20px;  
     }
 </style>
 </head>
@@ -84,10 +84,6 @@
         </div>-->
     {% endblock go_to_top %}
 </div>
-{% block footer %}
-    <!-- FOOTER-->
-    {% include '__footer.html' %}
-{% endblock footer %}
 <!-- LOADING-->
 <div class="body-2 loading">
     <div class="dots-loader"></div>

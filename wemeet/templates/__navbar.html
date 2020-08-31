@@ -18,13 +18,6 @@
             <nav class="navigation collapse navbar-collapse pull-right">
                 <ul class="nav-links nav navbar-nav">
                     <li class="hvr-grow"><a href="{% url 'home' %}" class="main-menu">Home</a></li>
-                    <li class="dropdown hvr-grow"><a href="javascript:void(0)" class="main-menu">Account<span class="fa fa-angle-down icons-dropdown"></span></a>
-                        <ul class="dropdown-menu edugate-dropdown-menu-1">
-                            <li><a href="{% url 'profile' %}" class="link-page">Profile</a></li>
-                            <li><a href="{% url 'reset_password' %}" class="link-page">Reset Password</a></li>
-                            <li><a href="{% url 'logout' %}" class="link-page">Logout</a></li>
-                        </ul>
-                    </li>
                     <li class="dropdown hvr-grow"><a href="javascript:void(0)" class="main-menu">Board<span class="fa fa-angle-down icons-dropdown"></span></a>
                         <ul class="dropdown-menu edugate-dropdown-menu-1">
                             <li>
@@ -33,6 +26,13 @@
                             <li>
                                 <a class="link-page" id="joinBoardBtn" data-toggle="modal" data-target="#joinBoardModal">Join</a>
                             </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown hvr-grow"><a href="javascript:void(0)" class="main-menu">Account<span class="fa fa-angle-down icons-dropdown"></span></a>
+                        <ul class="dropdown-menu edugate-dropdown-menu-1">
+                            <li><a href="{% url 'profile' %}" class="link-page">Profile</a></li>
+                            <li><a href="{% url 'reset_password' %}" class="link-page">Reset Password</a></li>
+                            <li><a href="{% url 'logout' %}" class="link-page">Logout</a></li>
                         </ul>
                     </li>
                 </ul>

@@ -1,9 +1,10 @@
 {% load static %}
 <body>
 	<span>Board Title: </span><b>{{ board.boardTitle }}</b><br>
-	<span>Board Typle: </span><b>{{ board.boardType.boardType }}</b>
-	<br>
-	you can share this code: <b>{{ board.token }}</b> so other people can join this using code.Or you can invite people from site.<br>
-	Thanks<br>
+	<span>Board Typle: </span><b>{{ board.boardType.boardType }}</b><br>
+	<span>Board Code: <span style="font-size: 32px; font-weight: 800;"> {{ board.token }} </span></span>
+	<br><br>
+	Wow... You just created this board. Now you can share the above code to let people join this board or you can invite people from the site.<br><br>
+	Regards,<br>
 	Team WeMeet
 </body>

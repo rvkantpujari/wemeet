@@ -8,7 +8,6 @@
 {% with boardMember|currentAccesses as currentAccesses %}
 {% with board|getUsersAccessRights:user as hasRight %}
 
-
 <div class="section section-padding profile-teacher">
 	<div class="container">
 		<div class="profile-teacher-wrapper">
@@ -72,16 +71,25 @@
 														<h4> {{ right }} </h4>
 													</td>
 													<td class="col-4">
-														<h4><input type="checkbox" name="accessRight" value="{{ right.id }}"
+														<input type="checkbox" name="accessRight" value="{{ right.id }}"
 															class="access_right_class"
-														{% if currentAccesses|hasAccess:right %} checked {% endif %}></h4>
+														{% if currentAccesses|hasAccess:right %} checked {% endif %}>
 													</td>
 											</tr>
 										{% endfor %}
 									{% else %}
 										{% for right in accessRights %}
 											{% if currentAccesses|hasAccess:right %}
-											<h4> {{ right }} </h4>
+											<tr class="table-row" style="text-transform:capitalize;">
+												<td class="col-1" style="padding-left: 20px;">
+													<h4> {{ right }} </h4>
+												</td>
+												<td class="col-4">
+													<input type="checkbox" name="accessRight" value="{{ right.id }}"
+														class="access_right_class"
+													{% if currentAccesses|hasAccess:right %} checked {% endif %} disabled>
+												</td>
+											</tr>
 											{% endif %}
 										{% endfor %}
 									{% endif %}
